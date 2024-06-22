@@ -9,12 +9,12 @@ const stripePromise = loadStripe(import.meta.env.VITE_PK);
 const Payment = () => {
   const location = useLocation();
   const state = location.state || {};
-  const { fee } = state;
+  const { fee, universityName, scholarshipId, scholarshipDetails } = state;
 
   return (
     <>
       <Elements stripe={stripePromise}>
-        <CheckoutForm fee={fee}></CheckoutForm>
+        <CheckoutForm fee={fee} universityName={universityName} scholarshipId={scholarshipId} scholarshipDetails={scholarshipDetails}></CheckoutForm>
       </Elements>
     </>
   );

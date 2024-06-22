@@ -1,10 +1,15 @@
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import useAuth from "../../Hooks/useAuth";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
-const CheckoutForm = ({ fee }) => {
+const CheckoutForm = ({ fee, universityName, scholarshipId, scholarshipDetails }) => {
+  const navigate = useNavigate();
   const [error, setError] = useState("");
   const [clientSecret, setClientSecret] = useState();
+  const {user} = useAuth();
   const stripe = useStripe();
   const elements = useElements();
 
@@ -12,11 +17,9 @@ const CheckoutForm = ({ fee }) => {
     axios
       .post("http://localhost:5000/create-payment-intent", { price: fee })
       .then((res) => {
-        console.log(res.data.clientSecret);
         setClientSecret(res.data.clientSecret);
       });
   }, [fee]);
-  console.log(clientSecret);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -38,8 +41,47 @@ const CheckoutForm = ({ fee }) => {
 
     if (error) {
       console.log("payment error", error);
+      setError(error.message)
     } else {
       console.log("paymentMethod", paymentMethod);
+      setError('')
+    }
+    const {paymentIntent, error: confirmError} = await stripe.confirmCardPayment(clientSecret, {
+    payment_method: {
+        card: card,
+        billing_details: {
+          email: user?.email || 'anonymous',
+          name: user?.displayName || 'anonymous'
+        }
+      }
+    })
+    if (confirmError) {
+      console.log(confirmError);
+      setError(confirmError.message)
+    }
+    else{
+      console.log(paymentIntent);
+      setError('')
+      if (paymentIntent.status === 'succeeded') {
+        Swal.fire({
+          title: "Success!",
+          text: "Your payment was successful",
+          icon: "success"
+        });
+        const payment = {
+          email: user.email,
+          price: fee,
+          transactionId: paymentIntent.id,
+          date: new Date(),
+          universityName: universityName,
+          scholarshipId: scholarshipId,
+        }
+  
+        const res = await axios.post("http://localhost:5000/savePayment", payment)
+        console.log('payment saved', res);
+        
+        navigate('/apply', { state: { scholarshipDetails: scholarshipDetails } });
+      }
     }
   };
 
@@ -63,7 +105,7 @@ const CheckoutForm = ({ fee }) => {
             },
           }}
         />
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center flex-col">
           <button
             className="btn btn-info my-4"
             type="submit"
@@ -71,8 +113,8 @@ const CheckoutForm = ({ fee }) => {
           >
             Pay
           </button>
+        <p className="text-red-500">{error}</p>
         </div>
-        <p className="text-red-500"></p>
       </form>
     </>
   );

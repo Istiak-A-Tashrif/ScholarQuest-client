@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios"; // Ensure axios is imported
+import useAuth from "../../Hooks/useAuth";
 
 const ScholarshipDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  const { user } = useAuth();
   const { data, isLoading, isError, error } = useQuery({
     queryFn: async () => {
       const { data } = await axios(`${import.meta.env.VITE_URL}/details/${id}`);
@@ -13,12 +14,21 @@ const ScholarshipDetails = () => {
     },
     queryKey: ["details", id],
   });
+  const { data: checkPayment = [], isLoading: isChekPaymentLoading, isError: isChekPaymentError, error: chekPaymentError } = useQuery({
+    queryFn: async () => {
+      const { data } = await axios(`${import.meta.env.VITE_URL}/checkPayment?email=${user.email}&id=${id}`);
+      return data;
+    },
+    queryKey: ["checkPayment", id],
+  });
 
+  console.log(checkPayment);
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error: {error.message}</p>;
 
   // Destructure data object to access scholarship details
   const {
+    _id,
     universityName,
     universityImage,
     scholarshipCategory,
@@ -34,9 +44,14 @@ const ScholarshipDetails = () => {
     serviceCharge,
     reviews,
   } = data;
-
+ 
   const handleApplyNow = () => {
-    navigate('/payment', { state: { fee: applicationFees } });
+    if (checkPayment) {
+      navigate('/apply', { state: { scholarshipDetails: data } });
+    }
+    else {
+      navigate('/payment', { state: { fee: applicationFees, universityName: universityName, scholarshipId: _id, scholarshipDetails: data } });
+    }
   };
 
   return (

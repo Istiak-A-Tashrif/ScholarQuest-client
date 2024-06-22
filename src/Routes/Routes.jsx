@@ -7,44 +7,54 @@ import ScholarshipDetails from "../pages/ScholarshipDetails/ScholarshipDetails";
 import Payment from "../pages/Payment/Payment";
 import Login from "../pages/Login/Login";
 import Register from "../pages/Register/Register";
+import PaymentHistory from "../pages/Dashboard/PaymentHistory";
+import ScholarshipApplicationForm from "../pages/ScholarshipApplicationForm/ScholarshipApplicationForm";
 
 const Routes = createBrowserRouter([
     {
         path: '/',
-        element: <Layout></Layout>,
+        element: <Layout />,
         children: [
             {
                 index: true,
-                element: <Home></Home>,
+                element: <Home />,
             },
             {
-                path: "/details/:id",
-                element: <ScholarshipDetails></ScholarshipDetails>,
+                path: "details/:id",
+                element: <ScholarshipDetails />,
             },
             {
-                path: "/payment",
-                element: <Payment></Payment>,
+                path: "payment",
+                element: <Payment />,
             },
             {
-                path: "/login",
-                element: <Login></Login>,
-              },
-              {
-                path: "/register",
-                element: <Register></Register>,
-              },
-        ]
+                path: "login",
+                element: <Login />,
+            },
+            {
+                path: "register",
+                element: <Register />,
+            },
+            {
+                path: "apply",
+                element: <ScholarshipApplicationForm />,
+            },
+        ],
     },
     {
-        path: "/dashboard",
-        element: <Dashboard></Dashboard>,
+        path: "dashboard",
+        element: <Dashboard />,
         children: [
             {
-                index: true,
-                element: <MyProfile></MyProfile>
-            }
-        ]
-    }
+                path: "myProfile",
+                element: <MyProfile />,
+            },
+            {
+                path: "paymentHistory",
+                element: <PaymentHistory />,
+            },
+        ],
+    },
 ]);
 
 export default Routes;

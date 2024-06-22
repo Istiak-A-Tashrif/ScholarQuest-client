@@ -9,7 +9,9 @@ const Layout = () => {
   return (
     <div className="container mx-auto">
       <Navbar></Navbar>
+      <div className="min-h-[calc(100vh-260px)]">
       <Outlet></Outlet>
+      </div>
       <Footer></Footer>
       <ToastContainer
         position="top-right"

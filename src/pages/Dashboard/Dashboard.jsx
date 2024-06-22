@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 const Dashboard = () => {
   return (
@@ -7,14 +7,14 @@ const Dashboard = () => {
       <aside>
         <div className="w-72 h-screen bg-[#1779AB] text-[#102C57]">
             <ul>
-                <li className="border-b p-4 font-medium">My Profile</li>
-                <li className="border-b p-4 font-medium">Dashboard</li>
+                <li className="border-b p-4 font-medium"><Link to={'myProfile'}>My Profile</Link></li>
+                <li className="border-b p-4 font-medium"><Link to={'paymentHistory'}>Payment History</Link></li>
                 <li className="border-b p-4 font-medium">Dashboard</li>
                 <li className="border-b p-4 font-medium">Dashboard</li>
             </ul>
         </div>
       </aside>
-      <div className="p-4">
+      <div className="p-4 w-full">
         <Outlet></Outlet>
       </div>
       </div>
