@@ -5,6 +5,8 @@ import Dashboard from "../pages/Dashboard/Dashboard";
 import MyProfile from "../pages/Dashboard/MyProfile";
 import ScholarshipDetails from "../pages/ScholarshipDetails/ScholarshipDetails";
 import Payment from "../pages/Payment/Payment";
+import Login from "../pages/Login/Login";
+import Register from "../pages/Register/Register";
 
 const Routes = createBrowserRouter([
     {
@@ -23,7 +25,14 @@ const Routes = createBrowserRouter([
                 path: "/payment",
                 element: <Payment></Payment>,
             },
-            
+            {
+                path: "/login",
+                element: <Login></Login>,
+              },
+              {
+                path: "/register",
+                element: <Register></Register>,
+              },
         ]
     },
     {

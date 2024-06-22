@@ -25,7 +25,6 @@ const Home = () => {
           },
         queryKey: ['review'],
       })
-      console.log(reviews);
     return (
         <>
             <Banner></Banner>

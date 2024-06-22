@@ -1,7 +1,11 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import useAuth from "../../Hooks/useAuth";
 
 const Navbar = () => {
+  const { user, userSignOut } = useAuth();
+  const navigate = useNavigate();
+
   const navLink = (
     <>
       <li>
@@ -13,9 +17,11 @@ const Navbar = () => {
       <li>
         <Link to={"/dashboard"}>Dashboard</Link>
       </li>
-      <li>
-        <Link>Log in</Link>
-      </li>
+        {user ? (
+          <li onClick={userSignOut}><Link>Log out</Link></li>
+        ) : (
+          <li><Link to={"/login"}>Log in</Link></li>
+        )}
     </>
   );
 
@@ -44,21 +50,17 @@ const Navbar = () => {
               tabIndex={0}
               className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
             >
-                {
-                    navLink
-                }
+              {navLink}
             </ul>
           </div>
 
           {/* website Name */}
-          <h1 className="text-2xl font-bold font-merriweather text-[#1679AB]">Scholar<span className="text-[#102C57]">Quest</span></h1>
+          <h1 className="text-2xl font-bold font-merriweather text-[#1679AB]">
+            Scholar<span className="text-[#102C57]">Quest</span>
+          </h1>
         </div>
         <div className="navbar-end hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">
-            {
-                navLink
-            }
-          </ul>
+          <ul className="menu menu-horizontal px-1">{navLink}</ul>
         </div>
       </div>
     </>
