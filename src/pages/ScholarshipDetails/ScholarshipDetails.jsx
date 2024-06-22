@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios"; // Ensure axios is imported
 
 const ScholarshipDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+
   const { data, isLoading, isError, error } = useQuery({
     queryFn: async () => {
       const { data } = await axios(`${import.meta.env.VITE_URL}/details/${id}`);
@@ -32,6 +34,10 @@ const ScholarshipDetails = () => {
     serviceCharge,
     reviews,
   } = data;
+
+  const handleApplyNow = () => {
+    navigate('/payment', { state: { fee: applicationFees } });
+  };
 
   return (
     <div className="hero min-h-screen bg-base-200">
@@ -109,8 +115,7 @@ const ScholarshipDetails = () => {
               </div>
             ))}
           </div>
-
-          <button className="btn btn-primary">Apply Now</button>
+          <button onClick={handleApplyNow} className="btn btn-primary">Apply Now</button>
         </div>
       </div>
     </div>

@@ -29,7 +29,7 @@ const ScholarshipCard = ({ scholarship }) => {
             </p>
           </div>
           <div className="card-actions justify-end">
-            <Link to={`/details/${scholarship.id}`}><button className="btn btn-info">View Details</button></Link>
+            <Link to={`/details/${scholarship._id}`}><button className="btn btn-info">View Details</button></Link>
           </div>
         </div>
       </div>
