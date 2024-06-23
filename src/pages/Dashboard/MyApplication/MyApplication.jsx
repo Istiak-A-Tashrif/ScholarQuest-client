@@ -6,6 +6,7 @@ import { FaEdit } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { MdCancel } from "react-icons/md";
 import ReviewModal from './ReviewModal';
+import Swal from 'sweetalert2';
 
 const MyApplication = () => {
   const { user } = useAuth();
@@ -37,9 +38,18 @@ const MyApplication = () => {
     setSelectedScholarship(null);
   };
 
-  const handleReviewSubmit = (review) => {
-    console.log("Review submitted:", review);
-    // Add your review submission logic here, such as sending the review to the server
+  const handleReviewSubmit = async (review) => {
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_URL}/saveReview`, review);
+      Swal.fire({
+        title: "Thank You",
+        text: "Your reviw has been saved",
+        icon: "success"
+      });
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      // Handle error state or display error message to user
+    }
     setIsModalOpen(false); // Close modal after submit
     setSelectedScholarship(null); // Reset selected scholarship
   };
