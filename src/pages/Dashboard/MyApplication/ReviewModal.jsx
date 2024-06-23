@@ -1,12 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import ReactStars from 'react-stars';
 import useAuth from '../../../Hooks/useAuth';
 
-const ReviewModal = ({ isOpen, onRequestClose, scholarship, onSubmit }) => {
+const ReviewModal = ({ isOpen, onRequestClose, scholarship, onSubmit, isEditing }) => {
+  const { user } = useAuth();
   const [ratingPoint, setRatingPoint] = useState(0);
   const [comments, setComments] = useState('');
-  const { user } = useAuth();
+
+  useEffect(() => {
+    if (isEditing && scholarship) {
+      setRatingPoint(scholarship.ratingPoint);
+      setComments(scholarship.comments);
+    }
+  }, [isEditing, scholarship]);
 
   const handleRatingChange = (newRating) => {
     setRatingPoint(newRating);
@@ -17,15 +24,14 @@ const ReviewModal = ({ isOpen, onRequestClose, scholarship, onSubmit }) => {
       ratingPoint,
       comments,
       reviewDate: new Date().toISOString(), // Automatically set to current date and time
-      scholarshipName: scholarship.scholarshipDetails.scholarshipCategory,
-      universityName: scholarship.scholarshipDetails.universityName,
-      universityId: scholarship.scholarshipDetails._id,
+      scholarshipName: scholarship.scholarshipName || scholarship.scholarshipDetails.scholarshipCategory,
+      universityName: scholarship.universityName || scholarship.scholarshipDetails.universityName,
+      universityId: scholarship.universityId || scholarship.scholarshipDetails._id,
       reviewerName: user.displayName,
       reviewerImage: user.photoURL || 'https://static.vecteezy.com/system/resources/thumbnails/005/129/844/sm…',
       reviewerEmail: user.email,
     };
     onSubmit(review);
-    onRequestClose();
   };
 
   return (
@@ -36,7 +42,7 @@ const ReviewModal = ({ isOpen, onRequestClose, scholarship, onSubmit }) => {
       overlayClassName="fixed inset-0 bg-black bg-opacity-50"
     >
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg mx-auto">
-        <h2 className="text-2xl font-bold mb-4">Add Review</h2>
+        <h2 className="text-2xl font-bold mb-4">{isEditing ? 'Edit Review' : 'Add Review'}</h2>
         <form>
           <div className="mb-4">
             <label className="block text-gray-700">Rating:</label>
@@ -64,7 +70,7 @@ const ReviewModal = ({ isOpen, onRequestClose, scholarship, onSubmit }) => {
               onClick={handleSubmit}
               className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
             >
-              Submit
+              {isEditing ? 'Update' : 'Submit'}
             </button>
             <button
               type="button"

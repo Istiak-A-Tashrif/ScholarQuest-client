@@ -28,6 +28,9 @@ const Login = () => {
     socialProvider()
       .then(async (res) => {
         if (res.user) {
+          // Send user data to backend
+          sendUserData(res.user.email, res.user.displayName, res.user.photoURL);
+          
           toast.success("Logged in", {
             position: "top-right",
             autoClose: 3000,
@@ -61,9 +64,9 @@ const Login = () => {
 
     loginUser(email, password)
       .then(async (res) => {
-        const { data } = await axiosSecure.post("/jwt", {
-          email: res.user.email,
-        });
+        // Send user data to backend
+        sendUserData(res.user.email, res.user.displayName, res.user.photoURL);
+        
         toast.success("Logged in", {
           position: "top-right",
           autoClose: 3000,
@@ -83,17 +86,31 @@ const Login = () => {
       });
   };
 
+  const sendUserData = async (email, name, photo) => {
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_URL}/registerUser`, {
+        email,
+        name,
+        photo,
+      });
+
+      console.log('User data sent to server:', response.data);
+      // Optionally handle success or perform additional actions
+    } catch (error) {
+      console.error('Failed to send user data to server:', error);
+      // Optionally handle error or display an error message to the user
+    }
+  };
+
   if (user || loader) return;
 
   return (
     <div className="min-h-[60vh] flex justify-center items-center mt-4">
-      
-        <title>StudyNexus | Login</title>
-      
-      <ScrollRestoration/>
+      <title>StudyNexus | Login</title>
+      <ScrollRestoration />
       <div className="flex items-center bg-[#FFE6E6] rounded-md justify-center flex-col md:flex-row">
         <div>
-          <Lottie animationData={login} loop={true} />;
+          <Lottie animationData={login} loop={true} />
         </div>
 
         <div className="w-full max-w-md p-8 pt-0  -mt-12 md:m-0 md:pt-8 space-y-3 rounded-xl text-gray-800">
