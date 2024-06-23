@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios"; // Ensure axios is imported
 import useAuth from "../../Hooks/useAuth";
+import formatDateToDdmmyyyy from "../../Utility/formatDateToDdmmyyyy";
 
 const ScholarshipDetails = () => {
   const { id } = useParams();
@@ -93,7 +94,7 @@ const ScholarshipDetails = () => {
             </p>
             <p>
               <strong>Application Deadline:</strong>{" "}
-              {new Date(applicationDeadline).toLocaleDateString()}
+              {formatDateToDdmmyyyy(applicationDeadline)}
             </p>
             <p>
               <strong>Application Fees:</strong> {applicationFees} USD
@@ -106,7 +107,7 @@ const ScholarshipDetails = () => {
             </p>
             <p>
               <strong>Post Date:</strong>{" "}
-              {new Date(postDate).toLocaleDateString()}
+              {formatDateToDdmmyyyy(postDate)}
             </p>
             <p>
               <strong>Service Charge:</strong> {serviceCharge} USD
