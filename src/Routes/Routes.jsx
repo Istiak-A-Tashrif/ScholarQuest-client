@@ -16,6 +16,7 @@ import ModeratorPanel from "../pages/Dashboard/ModeratorPanel";
 import AllScholarship from "../pages/AllScholarship/AllScholarship";
 import ManageScholarships from "../pages/Dashboard/ManageScholarships/ManageScholarships";
 import EditScholarship from "../pages/Dashboard/ManageScholarships/EditScholarship";
+import AllReviews from "../pages/Dashboard/MyReviews/AllReviews";
 
 const Routes = createBrowserRouter([
     {
@@ -87,6 +88,10 @@ const Routes = createBrowserRouter([
             {
                 path: "editScholarship/:id",
                 element: <EditScholarship />,
+            },
+            {
+                path: "allReviews",
+                element: <AllReviews />,
             },
         ],
     },

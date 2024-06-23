@@ -35,7 +35,9 @@ const Dashboard = () => {
               )}
               <li className="border-b p-4 font-medium"><Link to={'myApplication'}>My Application</Link></li>
               <li className="border-b p-4 font-medium"><Link to={'paymentHistory'}>Payment History</Link></li>
-              <li className="border-b p-4 font-medium"><Link to={'myReviews'}>My Reviews</Link></li>
+              {userRole === 'admin' ? 
+                <li className="border-b p-4 font-medium"><Link to={'allReviews'}>All Reviews</Link></li> : <li className="border-b p-4 font-medium"><Link to={'myReviews'}>My Reviews</Link></li>
+              }
             </ul>
           </div>
         </aside>

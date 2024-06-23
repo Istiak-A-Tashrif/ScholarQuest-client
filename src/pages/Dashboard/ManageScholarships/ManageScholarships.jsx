@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { FaEdit } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,23 +9,20 @@ import Swal from 'sweetalert2';
 const ManageScholarships = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const [scholarships, setScholarships] = useState([]);
+ 
 
-  // Fetch all scholarships
-  const fetchScholarships = async () => {
-    try {
+  const {
+    data: scholarships = [],
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryFn: async () => {
       const { data } = await axios.get(`${import.meta.env.VITE_URL}/allScholarship`);
-      setScholarships(data);
-    } catch (error) {
-      console.error('Error fetching scholarships:', error);
-      // Handle error state or display error message to user
-    }
-  };
-
-  // Initial fetch on component mount
-  useEffect(() => {
-    fetchScholarships();
-  }, []);
+      return data;
+    },
+    queryKey: ["scholarships"],
+  });
 
   const handleDelete = (deleteId) => {
     Swal.fire({
