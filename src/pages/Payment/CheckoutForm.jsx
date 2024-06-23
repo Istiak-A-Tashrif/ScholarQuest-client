@@ -12,14 +12,15 @@ const CheckoutForm = ({ fee, universityName, scholarshipId, scholarshipDetails }
   const {user} = useAuth();
   const stripe = useStripe();
   const elements = useElements();
+  const totalPrice = fee + scholarshipDetails.serviceCharge
 
   useEffect(() => {
     axios
-      .post("http://localhost:5000/create-payment-intent", { price: fee })
+      .post("http://localhost:5000/create-payment-intent", { price: totalPrice })
       .then((res) => {
         setClientSecret(res.data.clientSecret);
       });
-  }, [fee]);
+  }, [totalPrice]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -70,7 +71,7 @@ const CheckoutForm = ({ fee, universityName, scholarshipId, scholarshipDetails }
         });
         const payment = {
           email: user.email,
-          price: fee,
+          price: totalPrice,
           transactionId: paymentIntent.id,
           date: new Date(),
           universityName: universityName,

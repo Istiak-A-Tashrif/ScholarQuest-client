@@ -9,6 +9,7 @@ import Login from "../pages/Login/Login";
 import Register from "../pages/Register/Register";
 import PaymentHistory from "../pages/Dashboard/PaymentHistory";
 import ScholarshipApplicationForm from "../pages/ScholarshipApplicationForm/ScholarshipApplicationForm";
+import MyApplication from "../pages/Dashboard/MyApplication/MyApplication";
 
 const Routes = createBrowserRouter([
     {
@@ -52,6 +53,10 @@ const Routes = createBrowserRouter([
             {
                 path: "paymentHistory",
                 element: <PaymentHistory />,
+            },
+            {
+                path: "myApplication",
+                element: <MyApplication />,
             },
         ],
     },

@@ -46,6 +46,7 @@ const ScholarshipApplicationForm = () => {
           userEmail: user.email,
           scholarshipId: scholarshipDetails._id,
           currentDate: new Date().toISOString(),
+          scholarshipDetails
         };
 
         // Submit the form data

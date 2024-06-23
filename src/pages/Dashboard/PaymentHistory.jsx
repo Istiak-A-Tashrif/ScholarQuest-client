@@ -24,6 +24,7 @@ const PaymentHistory = () => {
   }
   return (
     <>
+      <div className="overflow-x-auto">
       <table className="table">
         {/* head */}
         <thead>
@@ -50,6 +51,7 @@ const PaymentHistory = () => {
           })}
         </tbody>
       </table>
+      </div>
     </>
   );
 };
