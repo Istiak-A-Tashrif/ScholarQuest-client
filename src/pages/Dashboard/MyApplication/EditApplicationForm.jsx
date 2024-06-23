@@ -1,91 +1,68 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useLocation } from 'react-router-dom';
-import useAuth from '../../Hooks/useAuth';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
+import useAuth from '../../../Hooks/useAuth';
+import { useParams } from 'react-router-dom';
 
-const imghosting = import.meta.env.VITE_IMG;
-const imgUpload = `https://api.imgbb.com/1/upload?key=${imghosting}`;
-
-const ScholarshipApplicationForm = () => {
-  const location = useLocation();
-  const state = location.state || {};
-  const { scholarshipDetails } = state;
-
+const EditApplicationForm = () => {
+  const { handleSubmit, register, setValue, formState: { errors }, setError } = useForm();
+  const { id } = useParams();
   const { user } = useAuth();
-  const { handleSubmit, register, formState: { errors }, setError } = useForm();
-
-  const queryClient = useQueryClient()
-
-  // Check if the user has already applied
-  const { data: alreadyApplied } = useQuery({
+  const { data: applicationData = [], isLoading, isError, error } = useQuery({
     queryFn: async () => {
-      const { data } = await axios.get(`${import.meta.env.VITE_URL}/checkApply`, {
-        params: { email: user.email, scholarshipId: scholarshipDetails?._id }
-      });
+      const { data } = await axios(
+        `${import.meta.env.VITE_URL}/editApplication?id=${id}`
+      );
       return data;
     },
-    queryKey: ["checkApply", user?.email, scholarshipDetails?._id],
-    enabled: !!scholarshipDetails?._id, // Enable query only when scholarshipDetails._id exists
+    queryKey: ["editApplication"],
   });
+   
+  // Initialize form with existing application data
+  useEffect(() => {
+    if (applicationData) {
+      setValue('phoneNumber', applicationData.phoneNumber);
+      setValue('address', applicationData.address);
+      setValue('gender', applicationData.gender);
+      setValue('degree', applicationData.degree);
+      setValue('sscResult', applicationData.sscResult);
+      setValue('hscResult', applicationData.hscResult);
+      setValue('studyGap', applicationData.studyGap);
+      // You can set other fields similarly
+    }
+  }, [applicationData, setValue]);
 
   const submitForm = async (formData) => {
     try {
-      const imgFile = new FormData();
-      imgFile.append('image', formData.photo[0]);
-  
-      const res = await axios.post(imgUpload, imgFile);
-  
-      if (res.data.success) {
-        const finalFormData = {
-          ...formData,
-          photo: res.data.data.display_url,
-          userName: user.displayName,
-          userEmail: user.email,
-          scholarshipId: scholarshipDetails._id,
-          currentDate: new Date().toISOString(),
-          scholarshipDetails
-        };
-  
-        // Submit the form data
-        await axios.post(`${import.meta.env.VITE_URL}/scholarApply`, finalFormData);
-  
+      // Submit the form data
+     const res = await axios.put(`${import.meta.env.VITE_URL}/updateScholarApply/${applicationData._id}`, formData);
+      // Show success message
+      if (res.data.application.matchedCount>0) {
         Swal.fire({
-          title: "Success",
-          text: "You applied successfully",
-          icon: "success"
-        });
-  
-        queryClient.invalidateQueries({ queryKey: ["checkApply"] });
-  
-      } else {
-        setError("photo", {
-          type: "server",
-          message: "Failed to upload photo. Please try again."
-        });
+            title: "Oops",
+            text: "Nothing to update",
+            icon: "info"
+          });
+      }
+      if (res.data.application.modifiedCount>0) {
+        Swal.fire({
+            title: "Success",
+            text: "Application updated successfully",
+            icon: "success"
+          });
       }
     } catch (error) {
       console.error('Error submitting form:', error);
+      // Show error message
       Swal.fire({
         title: "Error",
-        text: "Failed to submit your application. Please try again later.",
+        text: "Failed to update your application. Please try again later.",
         icon: "error"
       });
     }
   };
-  
-
-  if (alreadyApplied) {
-    return (
-      <div className="max-w-lg mx-auto mt-8 bg-white p-6 rounded shadow-lg mb-6 text-center">
-        <h2 className="text-2xl font-bold mb-4">Already Applied</h2>
-        <p className="text-lg text-gray-700">You have already applied for this scholarship.</p>
-        <p className='text-blue-500 mt-6'><Link to={"/dashboard/myapplication"}>See My Applications</Link></p>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-lg mx-auto mt-8 bg-white p-6 rounded shadow-lg mb-6">
@@ -95,13 +72,6 @@ const ScholarshipApplicationForm = () => {
           <label className="block text-sm font-medium text-gray-700">Phone Number</label>
           <input type="number" {...register('phoneNumber', { required: true })} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
           {errors.phoneNumber && <span className="text-red-500 text-sm">This field is required</span>}
-        </div>
-
-        {/* Applicant photo */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700">Photo</label>
-          <input type="file" {...register('photo', { required: true })} className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
-          {errors.photo && <span className="text-red-500 text-sm">{errors.photo.message}</span>}
         </div>
 
         {/* Applicant address */}
@@ -155,28 +125,28 @@ const ScholarshipApplicationForm = () => {
         {/* University name (read-only) */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">University Name</label>
-          <input type="text" value={scholarshipDetails?.universityName} readOnly className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+          <input type="text" value={applicationData?.scholarshipDetails?.universityName} readOnly className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
         </div>
 
         {/* Scholarship category (read-only) */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Scholarship Category</label>
-          <input type="text" value={scholarshipDetails?.scholarshipCategory} readOnly className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+          <input type="text" value={applicationData?.scholarshipDetails?.scholarshipCategory} readOnly className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
         </div>
 
         {/* Subject Category (read-only) */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700">Subject Category</label>
-          <input type="text" value={scholarshipDetails?.subjectCategory} readOnly className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+          <input type="text" value={applicationData?.scholarshipDetails?.subjectCategory} readOnly className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
         </div>
 
         {/* Submit Button */}
         <div className="mb-4">
-          <button type="submit" className="w-full bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600">Apply</button>
+          <button type="submit" className="w-full bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600">Update Application</button>
         </div>
       </form>
     </div>
   );
 };
 
-export default ScholarshipApplicationForm;
+export default EditApplicationForm;

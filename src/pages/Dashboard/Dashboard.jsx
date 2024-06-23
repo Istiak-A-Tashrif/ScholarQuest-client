@@ -10,7 +10,7 @@ const Dashboard = () => {
                 <li className="border-b p-4 font-medium"><Link to={'myProfile'}>My Profile</Link></li>
                 <li className="border-b p-4 font-medium"><Link to={'myApplication'}>My application</Link></li>
                 <li className="border-b p-4 font-medium"><Link to={'paymentHistory'}>Payment History</Link></li>
-                <li className="border-b p-4 font-medium">Dashboard</li>
+                <li className="border-b p-4 font-medium"><Link to={'myReviews'}>My Reviews</Link></li>
             </ul>
         </div>
       </aside>

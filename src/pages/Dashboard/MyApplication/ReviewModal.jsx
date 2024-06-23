@@ -17,7 +17,7 @@ const ReviewModal = ({ isOpen, onRequestClose, scholarship, onSubmit }) => {
       ratingPoint,
       comments,
       reviewDate: new Date().toISOString(), // Automatically set to current date and time
-      scholarshipName: scholarship.scholarshipDetails.universityName,
+      scholarshipName: scholarship.scholarshipDetails.scholarshipCategory,
       universityName: scholarship.scholarshipDetails.universityName,
       universityId: scholarship.scholarshipDetails._id,
       reviewerName: user.displayName,

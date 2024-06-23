@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import useAuth from "../../../Hooks/useAuth";
 import axios from "axios";
 import { FaEdit } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MdCancel } from "react-icons/md";
 import ReviewModal from './ReviewModal';
 import Swal from 'sweetalert2';
@@ -12,6 +12,9 @@ const MyApplication = () => {
   const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedScholarship, setSelectedScholarship] = useState(null);
+  
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const {
     data: applications = [],
@@ -37,6 +40,44 @@ const MyApplication = () => {
     setIsModalOpen(false);
     setSelectedScholarship(null);
   };
+  
+  const handleDelete = (deleteId) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios.delete(`${import.meta.env.VITE_URL}/deleteApplication/${deleteId}`)
+          .then(response => {
+            Swal.fire({
+              title: "Deleted!",
+              text: "Your application has been deleted.",
+              icon: "success",
+              timer: 1500,
+              showConfirmButton: false
+            });
+            queryClient.invalidateQueries({ queryKey: ["applications"] });
+          })
+          .catch(error => {
+            console.error('Error deleting application:', error);
+            Swal.fire({
+              title: "Error",
+              text: "Failed to delete application. Please try again later.",
+              icon: "error",
+              timer: 1500,
+              showConfirmButton: false
+            });
+            // Handle error (e.g., show error message)
+          });
+      }
+    });
+  };
+  
 
   const handleReviewSubmit = async (review) => {
     try {
@@ -53,7 +94,7 @@ const MyApplication = () => {
     setIsModalOpen(false); // Close modal after submit
     setSelectedScholarship(null); // Reset selected scholarship
   };
-
+ 
   return (
     <>
       <div className="overflow-x-auto">
@@ -88,15 +129,17 @@ const MyApplication = () => {
                   {application.scholarshipDetails.applicationFees +
                     application.scholarshipDetails.serviceCharge}
                 </td>
-                <td>{application.scholarshipDetails?.status || "pending"}</td>
+                <td>{application?.status || "pending"}</td>
                 <td>
-                  <Link className="btn btn-link"> Details</Link>
+                  <Link to={`/details/${application.scholarshipDetails._id}`} className="btn btn-link"> Details</Link>
                 </td>
                 <td>
-                  <FaEdit className="hover:scale-[2]"></FaEdit>
+                  <button onClick={()=>navigate(`/dashboard/editApplication/${application._id}`)}><FaEdit className="hover:scale-[2]"></FaEdit></button>
                 </td>
                 <td>
-                  <MdCancel className="hover:scale-[2]"></MdCancel>
+                <button onClick={() => handleDelete(application._id)}>
+                    <MdCancel className="hover:scale-[2]" />
+                  </button>
                 </td>
                 <td>
                   <button
