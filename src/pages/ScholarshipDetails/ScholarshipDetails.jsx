@@ -7,14 +7,18 @@ const ScholarshipDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { data, isLoading, isError, error } = useQuery({
+
+  // Fetch scholarship details
+  const { data: scholarshipData, isLoading: scholarshipLoading, isError: scholarshipError, error: scholarshipErrorObj } = useQuery({
+    queryKey: ["details", id],
     queryFn: async () => {
       const { data } = await axios(`${import.meta.env.VITE_URL}/details/${id}`);
       return data;
     },
-    queryKey: ["details", id],
   });
-  const { data: checkPayment = [], isLoading: isChekPaymentLoading, isError: isChekPaymentError, error: chekPaymentError } = useQuery({
+
+  // Fetch payment status
+  const { data: checkPaymentData = [], isLoading: checkPaymentLoading, isError: checkPaymentError, error: chekPaymentError } = useQuery({
     queryFn: async () => {
       const { data } = await axios(`${import.meta.env.VITE_URL}/checkPayment?email=${user.email}&id=${id}`);
       return data;
@@ -22,11 +26,19 @@ const ScholarshipDetails = () => {
     queryKey: ["checkPayment", id],
   });
 
-  console.log(checkPayment);
-  if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Error: {error.message}</p>;
+  // Fetch reviews for the scholarship
+  const { data: reviews = [], isLoading: reviewsLoading, error: reviewsError } = useQuery({
+    queryKey: ["reviews", id],
+    queryFn: async () => {
+      const { data } = await axios(`${import.meta.env.VITE_URL}/reviews/${id}`);
+      return data;
+    },
+  });
 
-  // Destructure data object to access scholarship details
+  if (scholarshipLoading || checkPaymentLoading || reviewsLoading) return <p>Loading...</p>;
+  if (scholarshipError || checkPaymentError || reviewsError) return <p>Error: {scholarshipError?.message || checkPaymentError?.message || reviewsError?.message}</p>;
+
+  // Destructure scholarship details object to access necessary fields
   const {
     _id,
     universityName,
@@ -42,15 +54,14 @@ const ScholarshipDetails = () => {
     stipend,
     postDate,
     serviceCharge,
-    reviews,
-  } = data;
- 
+  } = scholarshipData;
+
   const handleApplyNow = () => {
-    if (checkPayment) {
-      navigate('/apply', { state: { scholarshipDetails: data } });
+    if (checkPaymentData) {
+      navigate('/apply', { state: { scholarshipDetails: scholarshipData } });
     }
     else {
-      navigate('/payment', { state: { fee: applicationFees, universityName: universityName, scholarshipId: _id, scholarshipDetails: data } });
+      navigate('/payment', { state: { fee: applicationFees, universityName: universityName, scholarshipId: _id, scholarshipDetails: scholarshipData } });
     }
   };
 
