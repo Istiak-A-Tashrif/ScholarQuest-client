@@ -27,15 +27,20 @@ const Login = () => {
 
   // handle social errors
   const handleSocialLogin = (socialProvider) => {
-    socialProvider()
-      .then(async (res) => {
-        if (res.user) {
-          await axiosSecure.post("/jwt", {
+  socialProvider()
+    .then(async (res) => {
+      if (res.user) {
+        try {
+          // Call backend endpoint to get JWT token
+          const { data } = await axiosSecure.post("/jwt", {
             email: res.user.email,
           });
-          // Send user data to backend
-          sendUserData(res.user.email, res.user.displayName, res.user.photoURL);
-          
+
+          localStorage.setItem('token', data.token);
+          // Send user data to backend (assuming sendUserData is defined)
+          await sendUserData(res.user.email, res.user.displayName, res.user.photoURL);
+
+          // Show success toast notification
           toast.success("Logged in", {
             position: "top-right",
             autoClose: 3000,
@@ -47,14 +52,26 @@ const Login = () => {
             theme: "colored",
             transition: Slide,
           });
+
+          // Navigate to the specified location or default "/"
           navigate(location?.state || "/");
+        } catch (error) {
+          console.error('Error during social login:', error.message);
+          // Notify user about the error
+          notifyError();
         }
-      })
-      .catch((error) => {
-        console.error(error.message);
+      } else {
+        console.error('Social login response does not contain user information:', res);
+        // Notify user about the issue
         notifyError();
-      });
-  };
+      }
+    })
+    .catch((error) => {
+      console.error('Error during social login:', error.message);
+      // Notify user about the error
+      notifyError();
+    });
+};
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -69,9 +86,11 @@ const Login = () => {
 
     loginUser(email, password)
       .then(async (res) => {
-        await axiosSecure.post("/jwt", {
+        const { data } = await axiosSecure.post("/jwt", {
           email: res.user.email,
         });
+
+        localStorage.setItem('token', data.token)
         // Send user data to backend
         sendUserData(res.user.email, res.user.displayName, res.user.photoURL);
         
