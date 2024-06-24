@@ -8,6 +8,7 @@ import { Slide, toast } from "react-toastify";
 import axios from "axios";
 import useAxiosSecure from "../../Hooks/UseAxiosSecure";
 
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,6 +17,7 @@ const Login = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const axiosSecure = useAxiosSecure()
 
   useEffect(() => {
     if (user) {
@@ -28,6 +30,9 @@ const Login = () => {
     socialProvider()
       .then(async (res) => {
         if (res.user) {
+          await axiosSecure.post("/jwt", {
+            email: res.user.email,
+          });
           // Send user data to backend
           sendUserData(res.user.email, res.user.displayName, res.user.photoURL);
           
@@ -64,6 +69,9 @@ const Login = () => {
 
     loginUser(email, password)
       .then(async (res) => {
+        await axiosSecure.post("/jwt", {
+          email: res.user.email,
+        });
         // Send user data to backend
         sendUserData(res.user.email, res.user.displayName, res.user.photoURL);
         

@@ -60,6 +60,9 @@ const Register = () => {
       const photoURL = imgRes.data.data.url;
 
       const userCredential = await createUser(email, password);
+      await axiosSecure.post("/jwt", {
+        email: email,
+      });
       await update(name, photoURL);
       
       const newUser = {
@@ -86,20 +89,30 @@ const Register = () => {
 
   const handleSocialLogin = async (socialProvider) => {
     try {
-      const res = await socialProvider();
+      const res = await socialProvider(); // Assuming socialProvider handles social login
       const user = res.user;
-
-      // Save user info to database
-      await axiosSecure.post('/registerUser', {
+  
+      // Send user email to get JWT token (assuming axiosSecure handles secure requests)
+      await axiosSecure.post("/jwt", {
+        email: user.email,
+      });
+  
+      // Register user if not already registered
+      await axios.post(`${import.meta.env.VITE_URL}/registerUser`, {
         email: user.email,
         name: user.displayName,
         photo: user.photoURL || 'https://static.vecteezy.com/system/resources/thumbnails/005/129/844/sm...',
       });
-
-      notify();
+  
+      notify(); // Notify user about successful registration
     } catch (error) {
-      console.error(error.message);
-      notifyError();
+      if (error.response && error.response.status === 400) {
+        console.log("User with this email already exists.");
+        notify();
+      } else {
+        console.error('Error:', error.message);
+        notifyError(); // Notify user about the error
+      }
     }
   };
 
