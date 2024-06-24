@@ -30,7 +30,7 @@ const Navbar = () => {
       <div className="navbar bg-base-100 mb-4">
         <div className="navbar-start z-20">
           <div className="dropdown">
-            <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+            <div tabIndex={0} role="button" className="btn btn-ghost pl-0 lg:hidden">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-5 w-5"
