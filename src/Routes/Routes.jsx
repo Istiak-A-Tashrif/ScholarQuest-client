@@ -12,11 +12,12 @@ import ScholarshipApplicationForm from "../pages/ScholarshipApplicationForm/Scho
 import MyApplication from "../pages/Dashboard/MyApplication/MyApplication";
 import MyReviews from "../pages/Dashboard/MyReviews/MyReviews";
 import EditApplicationForm from "../pages/Dashboard/MyApplication/EditApplicationForm";
-import ModeratorPanel from "../pages/Dashboard/ModeratorPanel";
 import AllScholarship from "../pages/AllScholarship/AllScholarship";
 import ManageScholarships from "../pages/Dashboard/ManageScholarships/ManageScholarships";
 import EditScholarship from "../pages/Dashboard/ManageScholarships/EditScholarship";
 import AllReviews from "../pages/Dashboard/MyReviews/AllReviews";
+import AllApplications from "../pages/Dashboard/AllApplications/AllApplications";
+import UserPanel from "../pages/Dashboard/UserPanel";
 
 const Routes = createBrowserRouter([
     {
@@ -78,8 +79,8 @@ const Routes = createBrowserRouter([
                 element: <EditApplicationForm />,
             },
             {
-                path: "moderatorPanel",
-                element: <ModeratorPanel />,
+                path: "userPanel",
+                element: <UserPanel />,
             },
             {
                 path: "manageScholarships",
@@ -92,6 +93,10 @@ const Routes = createBrowserRouter([
             {
                 path: "allReviews",
                 element: <AllReviews />,
+            },
+            {
+                path: "allApplication",
+                element: <AllApplications />,
             },
         ],
     },

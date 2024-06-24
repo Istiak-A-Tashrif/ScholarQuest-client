@@ -28,16 +28,25 @@ const Dashboard = () => {
             <ul>
               <li className="border-b p-4 font-medium"><Link to={'myProfile'}>My Profile</Link></li>
               {userRole === 'admin' && (
-                <li className="border-b p-4 font-medium"><Link to={'moderatorPanel'}>Moderator Panel</Link></li>
+                <li className="border-b p-4 font-medium"><Link to={'userPanel'}>Admin Panel</Link></li>
+              )}
+              {userRole === 'moderator' && (
+                <li className="border-b p-4 font-medium"><Link to={'userPanel'}>Moderator Panel</Link></li>
+              )}
+              {userRole === 'admin' && (
+                <li className="border-b p-4 font-medium"><Link to={'addScholarship'}>Add Scholarship</Link></li>
               )}
               {userRole === 'admin' && (
                 <li className="border-b p-4 font-medium"><Link to={'manageScholarships'}>Manage Scholarships</Link></li>
               )}
               <li className="border-b p-4 font-medium"><Link to={'myApplication'}>My Application</Link></li>
-              <li className="border-b p-4 font-medium"><Link to={'paymentHistory'}>Payment History</Link></li>
-              {userRole === 'admin' ? 
-                <li className="border-b p-4 font-medium"><Link to={'allReviews'}>All Reviews</Link></li> : <li className="border-b p-4 font-medium"><Link to={'myReviews'}>My Reviews</Link></li>
+              {userRole === 'admin' &&
+                <li className="border-b p-4 font-medium"><Link to={'allApplication'}>All Application</Link></li>}
+               <li className="border-b p-4 font-medium"><Link to={'myReviews'}>My Reviews</Link></li>
+               {userRole === 'admin' && 
+                <li className="border-b p-4 font-medium"><Link to={'allReviews'}>All Reviews</Link></li>
               }
+              <li className="border-b p-4 font-medium"><Link to={'paymentHistory'}>Payment History</Link></li>
             </ul>
           </div>
         </aside>
