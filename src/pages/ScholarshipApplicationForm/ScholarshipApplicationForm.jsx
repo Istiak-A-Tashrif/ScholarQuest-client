@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation } from 'react-router-dom';
 import useAuth from '../../Hooks/useAuth';
@@ -17,7 +17,8 @@ const ScholarshipApplicationForm = () => {
   const { user } = useAuth();
   const { handleSubmit, register, formState: { errors }, setError } = useForm();
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
+  const [isSubmitting, setIsSubmitting] = useState(false); // State to manage submit button disabled state
 
   // Check if the user has already applied
   const { data: alreadyApplied } = useQuery({
@@ -32,12 +33,13 @@ const ScholarshipApplicationForm = () => {
   });
 
   const submitForm = async (formData) => {
+    setIsSubmitting(true); // Set loading state to true during form submission
     try {
       const imgFile = new FormData();
       imgFile.append('image', formData.photo[0]);
-  
+
       const res = await axios.post(imgUpload, imgFile);
-  
+
       if (res.data.success) {
         const finalFormData = {
           ...formData,
@@ -46,20 +48,21 @@ const ScholarshipApplicationForm = () => {
           userEmail: user.email,
           scholarshipId: scholarshipDetails._id,
           currentDate: new Date().toISOString(),
-          scholarshipDetails
+          scholarshipDetails,
+          status: "Pending"
         };
-  
+
         // Submit the form data
         await axios.post(`${import.meta.env.VITE_URL}/scholarApply`, finalFormData);
-  
+
         Swal.fire({
           title: "Success",
           text: "You applied successfully",
           icon: "success"
         });
-  
+
         queryClient.invalidateQueries({ queryKey: ["checkApply"] });
-  
+
       } else {
         setError("photo", {
           type: "server",
@@ -73,9 +76,10 @@ const ScholarshipApplicationForm = () => {
         text: "Failed to submit your application. Please try again later.",
         icon: "error"
       });
+    } finally {
+      setIsSubmitting(false); // Reset loading state after form submission completes
     }
   };
-  
 
   if (alreadyApplied) {
     return (
@@ -172,7 +176,9 @@ const ScholarshipApplicationForm = () => {
 
         {/* Submit Button */}
         <div className="mb-4">
-          <button type="submit" className="w-full bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600">Apply</button>
+          <button type="submit" disabled={isSubmitting} className={`w-full bg-indigo-500 text-white py-2 px-4 rounded-md focus:outline-none focus:bg-indigo-600 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-600'}`}>
+            {isSubmitting ? 'Submitting...' : 'Apply'}
+          </button>
         </div>
       </form>
     </div>
@@ -180,3 +186,4 @@ const ScholarshipApplicationForm = () => {
 };
 
 export default ScholarshipApplicationForm;
+

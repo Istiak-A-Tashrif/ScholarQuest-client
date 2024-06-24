@@ -94,7 +94,7 @@ const Dashboard = () => {
                 </li>
                 <li className="py-2">
                   <Link to={'allApplication'} className="text-black" onClick={handleDrawerClose}>
-                    All Applications
+                    Manage Applications
                   </Link>
                 </li>
                 <li className="py-2">
@@ -105,11 +105,32 @@ const Dashboard = () => {
               </>
             )}
             {userRole === 'moderator' && (
+              <>
               <li className="py-2">
                 <Link to={'userPanel'} className="text-black" onClick={handleDrawerClose}>
                   Moderator Panel
                 </Link>
               </li>
+              <li className="py-2">
+              <Link to={'addScholarship'} className="text-black" onClick={handleDrawerClose}>
+                Add Scholarship
+              </Link>
+            </li>
+            <li className="py-2">
+              <Link to={'manageScholarships'} className="text-black" onClick={handleDrawerClose}>
+                Manage Scholarships
+              </Link>
+            </li>
+            <li className="py-2">
+              <Link to={'allApplication'} className="text-black" onClick={handleDrawerClose}>
+                Manage Applications
+              </Link>
+            </li>
+            <li className="py-2">
+              <Link to={'allReviews'} className="text-black" onClick={handleDrawerClose}>
+                All Reviews
+              </Link>
+            </li></>
             )}
             <li className="py-2">
               <Link to={'myApplication'} className="text-black" onClick={handleDrawerClose}>

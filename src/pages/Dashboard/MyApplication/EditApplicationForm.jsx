@@ -39,14 +39,7 @@ const EditApplicationForm = () => {
       // Submit the form data
      const res = await axios.put(`${import.meta.env.VITE_URL}/updateScholarApply/${applicationData._id}`, formData);
       // Show success message
-      if (res.data.application.matchedCount>0) {
-        Swal.fire({
-            title: "Oops",
-            text: "Nothing to update",
-            icon: "info"
-          });
-      }
-      if (res.data.application.modifiedCount>0) {
+      if (res.data.application) {
         Swal.fire({
             title: "Success",
             text: "Application updated successfully",
@@ -58,7 +51,7 @@ const EditApplicationForm = () => {
       // Show error message
       Swal.fire({
         title: "Error",
-        text: "Failed to update your application. Please try again later.",
+        text: "Cannot update the application right now.",
         icon: "error"
       });
     }

@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
-import { FaEdit } from 'react-icons/fa';
 import { MdCancel } from 'react-icons/md';
+import { FaCheck } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import FeedbackModal from './FeedbackModal';
 import useAuth from '../../../Hooks/useAuth';
@@ -14,9 +13,9 @@ const AllApplications = () => {
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState(null);
+  const [statusFilter, setStatusFilter] = useState(''); // State for status filtering
 
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
 
   const {
     data: applications = [],
@@ -25,10 +24,17 @@ const AllApplications = () => {
     error,
   } = useQuery({
     queryFn: async () => {
-      const { data } = await axios.get(`${import.meta.env.VITE_URL}/allApplications`);
+      let url = `${import.meta.env.VITE_URL}/allApplications`;
+
+      // Add status filter if it's set
+      if (statusFilter) {
+        url += `?status=${statusFilter}`;
+      }
+
+      const { data } = await axios.get(url);
       return data;
     },
-    queryKey: ['allApplications'],
+    queryKey: ['allApplications', statusFilter], // Include statusFilter in the queryKey
   });
 
   const handleFeedbackClick = (application) => {
@@ -68,7 +74,7 @@ const AllApplications = () => {
               timer: 1500,
               showConfirmButton: false,
             });
-            queryClient.invalidateQueries({ queryKey: ['allApplications'] });
+            queryClient.invalidateQueries({ queryKey: ['allApplications', statusFilter] });
           })
           .catch((error) => {
             console.error('Error canceling application:', error);
@@ -86,17 +92,17 @@ const AllApplications = () => {
 
   const handleFeedbackSubmit = async (feedback) => {
     try {
-        const response = await axios.put(`${import.meta.env.VITE_URL}/submitFeedback/${feedback.applicationId}`, {
-            feedback: feedback.feedback,
-            status: 'Processing',
-          });
-       
+      const response = await axios.put(`${import.meta.env.VITE_URL}/submitFeedback/${feedback.applicationId}`, {
+        feedback: feedback.feedback,
+        status: 'Processing',
+      });
+
       Swal.fire({
         title: 'Thank You',
         text: 'Your feedback has been submitted',
         icon: 'success',
       });
-      queryClient.invalidateQueries({ queryKey: ['allApplications'] });
+      queryClient.invalidateQueries({ queryKey: ['allApplications', statusFilter] });
     } catch (error) {
       console.error('Error submitting feedback:', error);
       Swal.fire({
@@ -106,6 +112,43 @@ const AllApplications = () => {
       });
     }
     handleModalClose();
+  };
+
+  const handleApprove = (approveId) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This action will approve the application!',
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, approve it!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .put(`${import.meta.env.VITE_URL}/approveApplication/${approveId}`, { status: 'Approved' })
+          .then((response) => {
+            Swal.fire({
+              title: 'Approved!',
+              text: 'Application has been approved.',
+              icon: 'success',
+              timer: 1500,
+              showConfirmButton: false,
+            });
+            queryClient.invalidateQueries({ queryKey: ['allApplications', statusFilter] });
+          })
+          .catch((error) => {
+            console.error('Error approving application:', error);
+            Swal.fire({
+              title: 'Error',
+              text: 'Failed to approve application. Please try again later.',
+              icon: 'error',
+              timer: 1500,
+              showConfirmButton: false,
+            });
+          });
+      }
+    });
   };
 
   if (isLoading) {
@@ -118,6 +161,25 @@ const AllApplications = () => {
 
   return (
     <>
+      <div className="flex items-center mb-4">
+        <label htmlFor="statusFilter" className="block text-sm font-medium text-gray-700 mr-2">
+          Filter by Status:
+        </label>
+        <select
+          id="statusFilter"
+          name="statusFilter"
+          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="">All</option>
+          <option value="Pending">Pending</option>
+          <option value="Approved">Approved</option>
+          <option value="Rejected">Rejected</option>
+          <option value="Processing">Processing</option>
+        </select>
+      </div>
+
       <div className="overflow-x-auto">
         <table className="table">
           <thead>
@@ -161,6 +223,13 @@ const AllApplications = () => {
                   >
                     Feedback
                   </button>
+                </td>
+                <td>
+                  {application.status !== 'Approved' && (
+                    <button onClick={() => handleApprove(application._id)}>
+                      <FaCheck className="hover:scale-[1.5]" />
+                    </button>
+                  )}
                 </td>
                 <td>
                   <button onClick={() => handleCancel(application._id)}>
