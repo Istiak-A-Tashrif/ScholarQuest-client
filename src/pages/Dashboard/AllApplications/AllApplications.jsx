@@ -7,6 +7,8 @@ import Swal from 'sweetalert2';
 import FeedbackModal from './FeedbackModal';
 import useAuth from '../../../Hooks/useAuth';
 import DetailsModal from './DetailsModal';
+import Lottie from 'lottie-react';
+import loading from "../../../assets/loading.json";
 
 const AllApplications = () => {
   const { user } = useAuth();
@@ -152,11 +154,15 @@ const AllApplications = () => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center  min-h-[calc(100vh-300px)]">
+        <Lottie animationData={loading} loop={true} className="h-44"></Lottie>
+      </div>
+    );
   }
 
-  if (isError) {
-    return <div>Error: {error.message}</div>;
+  if (isError || error) {
+    console.error(error);
   }
 
   return (

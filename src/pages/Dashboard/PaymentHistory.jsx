@@ -2,6 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import useAuth from "../../Hooks/useAuth";
 import formatDateToDdmmyyyy from "../../Utility/formatDateToDdmmyyyy";
+import Lottie from "lottie-react";
+import loading from "../../assets/loading.json";
 
 const PaymentHistory = () => {
     const {user} = useAuth();
@@ -19,8 +21,17 @@ const PaymentHistory = () => {
     },
     queryKey: ["payments"],
   });
+
   if (isLoading) {
-    return <p>load</p>;
+    return (
+      <div className="flex items-center justify-center  min-h-[calc(100vh-300px)]">
+        <Lottie animationData={loading} loop={true} className="h-44"></Lottie>
+      </div>
+    );
+  }
+
+  if (isError || error) {
+    console.error(error);
   }
   return (
     <>

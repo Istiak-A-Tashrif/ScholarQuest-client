@@ -7,6 +7,7 @@ import useAuth from "../../../Hooks/useAuth";
 import formatDateToDdmmyyyy from "../../../Utility/formatDateToDdmmyyyy";
 import Swal from "sweetalert2";
 import ReviewModal from "../MyApplication/ReviewModal";
+import loading from "../../../assets/loading.json";
 
 const MyReviews = () => {
   const { user } = useAuth();
@@ -68,6 +69,18 @@ const MyReviews = () => {
     }
     handleModalClose();
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center  min-h-[calc(100vh-300px)]">
+        <Lottie animationData={loading} loop={true} className="h-44"></Lottie>
+      </div>
+    );
+  }
+
+  if (isError || error) {
+    console.error(error);
+  }
 
   return (
     <>

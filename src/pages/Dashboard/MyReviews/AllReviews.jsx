@@ -4,6 +4,8 @@ import axios from 'axios';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { MdDelete } from 'react-icons/md';
 import Swal from 'sweetalert2';
+import Lottie from 'lottie-react';
+import loading from "../../../assets/loading.json";
 
 const AllReviews = () => {
   const [userRole, setUserRole] = useState(null);
@@ -39,11 +41,15 @@ const AllReviews = () => {
   }
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center  min-h-[calc(100vh-300px)]">
+        <Lottie animationData={loading} loop={true} className="h-44"></Lottie>
+      </div>
+    );
   }
 
-  if (isError) {
-    return <div>Error: {error.message}</div>;
+  if (isError || error) {
+    console.error(error);
   }
 
   const handleDelete = async (reviewId) => {

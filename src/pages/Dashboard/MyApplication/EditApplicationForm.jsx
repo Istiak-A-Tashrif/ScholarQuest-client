@@ -5,6 +5,8 @@ import Swal from 'sweetalert2';
 import { useQuery } from '@tanstack/react-query';
 import useAuth from '../../../Hooks/useAuth';
 import { useParams } from 'react-router-dom';
+import Lottie from 'lottie-react';
+import loading from "../../../assets/loading.json";
 
 const EditApplicationForm = () => {
   const { handleSubmit, register, setValue, formState: { errors }, setError } = useForm();
@@ -56,6 +58,18 @@ const EditApplicationForm = () => {
       });
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center  min-h-[calc(100vh-300px)]">
+        <Lottie animationData={loading} loop={true} className="h-44"></Lottie>
+      </div>
+    );
+  }
+
+  if (isError || error) {
+    console.error(error);
+  }
 
   return (
     <div className="max-w-lg mx-auto mt-8 bg-white p-6 rounded shadow-lg mb-6">

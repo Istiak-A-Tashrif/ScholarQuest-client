@@ -6,6 +6,8 @@ import Newsletter from './Newsletter';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import Lottie from 'lottie-react';
+import loading from "../../assets/loading.json";
 
 
 const Home = () => {
@@ -26,6 +28,22 @@ const Home = () => {
           },
         queryKey: ['review'],
       })
+
+      if (isLoading || isReviewsLoading) {
+        return (
+          <div className="flex items-center justify-center  min-h-[calc(100vh-300px)]">
+            <Lottie animationData={loading} loop={true} className="h-44"></Lottie>
+          </div>
+        );
+      }
+    
+      if (isError || error) {
+        console.error(error);
+      }
+
+      if (isReviewsError || reviewsError) {
+        console.error(reviewsError);
+      }
     return (
         <>
             <Banner></Banner>

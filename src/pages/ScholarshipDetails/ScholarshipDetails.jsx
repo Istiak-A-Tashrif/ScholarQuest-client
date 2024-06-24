@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios"; // Ensure axios is imported
 import useAuth from "../../Hooks/useAuth";
 import formatDateToDdmmyyyy from "../../Utility/formatDateToDdmmyyyy";
+import Lottie from "lottie-react";
+import loading from "../../assets/loading.json";
 
 const ScholarshipDetails = () => {
   const { id } = useParams();
@@ -28,7 +30,7 @@ const ScholarshipDetails = () => {
   });
 
   // Fetch reviews for the scholarship
-  const { data: reviews = [], isLoading: reviewsLoading, error: reviewsError } = useQuery({
+  const { data: reviews = [], isLoading: reviewsLoading, isError, error } = useQuery({
     queryKey: ["reviews", id],
     queryFn: async () => {
       const { data } = await axios(`${import.meta.env.VITE_URL}/reviews/${id}`);
@@ -37,7 +39,7 @@ const ScholarshipDetails = () => {
   });
 
   if (scholarshipLoading || checkPaymentLoading || reviewsLoading) return <p>Loading...</p>;
-  if (scholarshipError || checkPaymentError || reviewsError) return <p>Error: {scholarshipError?.message || checkPaymentError?.message || reviewsError?.message}</p>;
+  if (error || scholarshipError || checkPaymentError) return <p>Error: {scholarshipError?.message || checkPaymentError?.message || reviewsError?.message}</p>;
 
   // Destructure scholarship details object to access necessary fields
   const {
@@ -65,6 +67,26 @@ const ScholarshipDetails = () => {
       navigate('/payment', { state: { fee: applicationFees, universityName: universityName, scholarshipId: _id, scholarshipDetails: scholarshipData } });
     }
   };
+
+  if (scholarshipLoading || checkPaymentLoading || reviewsLoading) {
+    return (
+      <div className="flex items-center justify-center  min-h-[calc(100vh-300px)]">
+        <Lottie animationData={loading} loop={true} className="h-44"></Lottie>
+      </div>
+    );
+  }
+
+  if (scholarshipError || scholarshipErrorObj) {
+    console.error(scholarshipErrorObj);
+  }
+
+  if (checkPaymentError || chekPaymentError) {
+    console.error(chekPaymentError);
+  }
+
+  if (isError || error) {
+    console.error(error);
+  }
 
   return (
     <div className="hero min-h-screen bg-base-200">

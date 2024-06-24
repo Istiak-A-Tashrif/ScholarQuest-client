@@ -7,6 +7,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { MdCancel } from "react-icons/md";
 import ReviewModal from './ReviewModal';
 import Swal from 'sweetalert2';
+import Lottie from 'lottie-react';
+import loading from "../../../assets/loading.json";
 
 const MyApplication = () => {
   const { user } = useAuth();
@@ -31,7 +33,7 @@ const MyApplication = () => {
     queryKey: ["applications"],
   });
 
-  const { data: reviews = [], isLoading: reviewLoading, isError: isReviewError, error: err } = useQuery({
+  const { data: reviews = [], isLoading: reviewLoading, isError: isReviewError, error: reviewError } = useQuery({
     queryFn: async () => {
       const { data } = await axios(
         `${import.meta.env.VITE_URL}/myReviews?email=${user.email}`
@@ -104,6 +106,22 @@ const MyApplication = () => {
     setIsModalOpen(false); // Close modal after submit
     setSelectedScholarship(null); // Reset selected scholarship
   };
+
+  if (isLoading || reviewLoading) {
+    return (
+      <div className="flex items-center justify-center  min-h-[calc(100vh-300px)]">
+        <Lottie animationData={loading} loop={true} className="h-44"></Lottie>
+      </div>
+    );
+  }
+
+  if (isError || error) {
+    console.error(error);
+  }
+
+  if (isReviewError || reviewError) {
+    console.error(reviewError);
+  }
  
   return (
     <>

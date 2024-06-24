@@ -19,11 +19,14 @@ import AllReviews from "../pages/Dashboard/MyReviews/AllReviews";
 import AllApplications from "../pages/Dashboard/AllApplications/AllApplications";
 import UserPanel from "../pages/Dashboard/UserPanel";
 import AddScholarship from "../pages/Dashboard/AddScholarship";
+import PrivateRoute from "../components/PrivateRoute/PrivateRoute";
+import ErrorPage from "../components/ErrorPage/ErrorPage";
 
 const Routes = createBrowserRouter([
     {
         path: '/',
         element: <Layout />,
+        errorElement: <ErrorPage></ErrorPage>,
         children: [
             {
                 index: true,
@@ -31,11 +34,11 @@ const Routes = createBrowserRouter([
             },
             {
                 path: "details/:id",
-                element: <ScholarshipDetails />,
+                element: <PrivateRoute><ScholarshipDetails /></PrivateRoute>,
             },
             {
                 path: "payment",
-                element: <Payment />,
+                element: <PrivateRoute><Payment /></PrivateRoute>,
             },
             {
                 path: "login",
@@ -47,7 +50,7 @@ const Routes = createBrowserRouter([
             },
             {
                 path: "apply",
-                element: <ScholarshipApplicationForm />,
+                element: <PrivateRoute><ScholarshipApplicationForm /></PrivateRoute>,
             },
             {
                 path: "allScholarship",
@@ -57,51 +60,52 @@ const Routes = createBrowserRouter([
     },
     {
         path: "dashboard",
-        element: <Dashboard />,
+        element: <PrivateRoute><Dashboard /></PrivateRoute>,
+        errorElement: <ErrorPage></ErrorPage>,
         children: [
             {
                 path: "myProfile",
-                element: <MyProfile />,
+                element: <PrivateRoute><MyProfile /></PrivateRoute>,
             },
             {
                 path: "paymentHistory",
-                element: <PaymentHistory />,
+                element: <PrivateRoute><PaymentHistory /></PrivateRoute>,
             },
             {
                 path: "myApplication",
-                element: <MyApplication />,
+                element: <PrivateRoute><MyApplication /></PrivateRoute>,
             },
             {
                 path: "myReviews",
-                element: <MyReviews />,
+                element: <PrivateRoute><MyReviews /></PrivateRoute>,
             },
             {
                 path: "editApplication/:id",
-                element: <EditApplicationForm />,
+                element: <PrivateRoute><EditApplicationForm /></PrivateRoute>,
             },
             {
                 path: "userPanel",
-                element: <UserPanel />,
+                element: <PrivateRoute><UserPanel /></PrivateRoute>,
             },
             {
                 path: "manageScholarships",
-                element: <ManageScholarships />,
+                element: <PrivateRoute><ManageScholarships /></PrivateRoute>,
             },
             {
                 path: "addScholarship",
-                element: <AddScholarship />,
+                element: <PrivateRoute><AddScholarship /></PrivateRoute>,
             },
             {
                 path: "editScholarship/:id",
-                element: <EditScholarship />,
+                element: <PrivateRoute><EditScholarship /></PrivateRoute>,
             },
             {
                 path: "allReviews",
-                element: <AllReviews />,
+                element: <PrivateRoute><AllReviews /></PrivateRoute>,
             },
             {
                 path: "allApplication",
-                element: <AllApplications />,
+                element: <PrivateRoute><AllApplications /></PrivateRoute>,
             },
         ],
     },

@@ -5,6 +5,8 @@ import { FaEdit } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { MdCancel } from "react-icons/md";
 import Swal from 'sweetalert2';
+import Lottie from 'lottie-react';
+import loading from "../../../assets/loading.json";
 
 const ManageScholarships = () => {
   const queryClient = useQueryClient();
@@ -62,6 +64,17 @@ const ManageScholarships = () => {
     });
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center  min-h-[calc(100vh-300px)]">
+        <Lottie animationData={loading} loop={true} className="h-44"></Lottie>
+      </div>
+    );
+  }
+
+  if (isError || error) {
+    console.error(error);
+  }
   return (
     <>
       <div className="overflow-x-auto">
