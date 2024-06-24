@@ -3,15 +3,17 @@ import { Link, Outlet } from "react-router-dom";
 import axios from "axios";
 import useAuth from "../../Hooks/useAuth";
 import { FaHome } from "react-icons/fa";
+import useAxiosSecure from "../../Hooks/UseAxiosSecure";
 
 const Dashboard = () => {
   const [userRole, setUserRole] = useState(null);
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
 
   useEffect(() => {
     const fetchUserRole = async () => {
       try {
-        const response = await axios.post(`${import.meta.env.VITE_URL}/checkUserRole`, { email: user?.email });
+        const response = await axiosSecure.post(`/checkUserRole?email=${user.email}`, { email: user?.email });
         setUserRole(response.data.role);
       } catch (error) {
         console.error("Error fetching user role:", error);

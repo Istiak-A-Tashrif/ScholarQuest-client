@@ -4,6 +4,7 @@ import ReactStars from 'react-stars';
 import useAuth from '../../../Hooks/useAuth';
 
 const ReviewModal = ({ isOpen, onRequestClose, scholarship, onSubmit, isEditing }) => {
+  console.log(scholarship);
   const { user } = useAuth();
   const [ratingPoint, setRatingPoint] = useState(0);
   const [comments, setComments] = useState('');
@@ -14,6 +15,7 @@ const ReviewModal = ({ isOpen, onRequestClose, scholarship, onSubmit, isEditing 
       setComments(scholarship.comments);
     }
   }, [isEditing, scholarship]);
+  
 
   const handleRatingChange = (newRating) => {
     setRatingPoint(newRating);
@@ -24,9 +26,11 @@ const ReviewModal = ({ isOpen, onRequestClose, scholarship, onSubmit, isEditing 
       ratingPoint,
       comments,
       reviewDate: new Date().toISOString(), // Automatically set to current date and time
-      scholarshipName: scholarship.scholarshipDetails.scholarshipCategory,
-      universityName: scholarship.scholarshipDetails.universityName,
-      universityId: scholarship.scholarshipDetails._id,
+      scholarshipName: scholarship?.scholarshipName || scholarship?.scholarshipDetails?.universityName,
+      universityId: scholarship?.universityId || scholarship?.scholarshipDetails?._id,
+      scholarshipName: scholarship?.scholarshipDetails?.scholarshipCategory,
+      universityName: scholarship?.scholarshipDetails?.universityName,
+      universityId: scholarship?.scholarshipDetails?._id,
       reviewerName: user.displayName,
       reviewerImage: user.photoURL || 'https://static.vecteezy.com/system/resources/thumbnails/005/129/844/sm…',
       reviewerEmail: user.email,

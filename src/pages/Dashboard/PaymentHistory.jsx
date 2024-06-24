@@ -4,9 +4,11 @@ import useAuth from "../../Hooks/useAuth";
 import formatDateToDdmmyyyy from "../../Utility/formatDateToDdmmyyyy";
 import Lottie from "lottie-react";
 import loading from "../../assets/loading.json";
+import useAxiosSecure from "../../Hooks/UseAxiosSecure";
 
 const PaymentHistory = () => {
     const {user} = useAuth();
+    const axiosSecure = useAxiosSecure();
   const {
     data: payments = [],
     isLoading,
@@ -14,8 +16,8 @@ const PaymentHistory = () => {
     error,
   } = useQuery({
     queryFn: async () => {
-      const { data } = await axios(
-        `${import.meta.env.VITE_URL}/paymentHistory?email=${user.email}`
+      const { data } = await axiosSecure(
+        `/paymentHistory?email=${user.email}`
       );
       return data;
     },

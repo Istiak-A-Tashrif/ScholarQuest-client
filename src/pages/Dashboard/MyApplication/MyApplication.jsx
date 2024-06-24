@@ -9,9 +9,11 @@ import ReviewModal from './ReviewModal';
 import Swal from 'sweetalert2';
 import Lottie from 'lottie-react';
 import loading from "../../../assets/loading.json";
+import useAxiosSecure from '../../../Hooks/UseAxiosSecure';
 
 const MyApplication = () => {
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedScholarship, setSelectedScholarship] = useState(null);
   
@@ -25,8 +27,8 @@ const MyApplication = () => {
     error,
   } = useQuery({
     queryFn: async () => {
-      const { data } = await axios(
-        `${import.meta.env.VITE_URL}/myApplication?email=${user.email}`
+      const { data } = await axiosSecure(
+        `/myApplication?email=${user.email}`
       );
       return data;
     },
@@ -35,8 +37,8 @@ const MyApplication = () => {
 
   const { data: reviews = [], isLoading: reviewLoading, isError: isReviewError, error: reviewError } = useQuery({
     queryFn: async () => {
-      const { data } = await axios(
-        `${import.meta.env.VITE_URL}/myReviews?email=${user.email}`
+      const { data } = await axiosSecure(
+        `/myReviews?email=${user.email}`
       );
       return data;
     },
@@ -64,7 +66,7 @@ const MyApplication = () => {
       confirmButtonText: "Yes, delete it!"
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`${import.meta.env.VITE_URL}/deleteApplication/${deleteId}`)
+        axiosSecure.delete(`/deleteApplication/${deleteId}?email=${user.email}`)
           .then(response => {
             Swal.fire({
               title: "Deleted!",
@@ -92,7 +94,7 @@ const MyApplication = () => {
 
   const handleReviewSubmit = async (review) => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_URL}/saveReview`, review);
+      const response = await axiosSecure.post(`/saveReview?email=${user.email}`, review);
       Swal.fire({
         title: "Thank You",
         text: "Your review has been saved",

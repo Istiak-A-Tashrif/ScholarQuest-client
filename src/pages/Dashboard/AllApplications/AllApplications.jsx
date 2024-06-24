@@ -9,9 +9,11 @@ import useAuth from '../../../Hooks/useAuth';
 import DetailsModal from './DetailsModal';
 import Lottie from 'lottie-react';
 import loading from "../../../assets/loading.json";
+import useAxiosSecure from '../../../Hooks/UseAxiosSecure';
 
 const AllApplications = () => {
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
   const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState(null);
@@ -26,14 +28,14 @@ const AllApplications = () => {
     error,
   } = useQuery({
     queryFn: async () => {
-      let url = `${import.meta.env.VITE_URL}/allApplications`;
+      let url = `/allApplications?email=${user.email}`;
 
       // Add status filter if it's set
       if (statusFilter) {
-        url += `?status=${statusFilter}`;
+        url += `&status=${statusFilter}`;
       }
 
-      const { data } = await axios.get(url);
+      const { data } = await axiosSecure.get(url);
       return data;
     },
     queryKey: ['allApplications', statusFilter], // Include statusFilter in the queryKey
@@ -66,8 +68,8 @@ const AllApplications = () => {
       confirmButtonText: 'Yes, reject it!',
     }).then((result) => {
       if (result.isConfirmed) {
-        axios
-          .put(`${import.meta.env.VITE_URL}/cancelApplication/${cancelId}`, { status: 'Rejected' })
+        axiosSecure
+          .put(`/cancelApplication/${cancelId}?email=${user.email}`, { status: 'Rejected' })
           .then((response) => {
             Swal.fire({
               title: 'Canceled!',
@@ -94,7 +96,7 @@ const AllApplications = () => {
 
   const handleFeedbackSubmit = async (feedback) => {
     try {
-      const response = await axios.put(`${import.meta.env.VITE_URL}/submitFeedback/${feedback.applicationId}`, {
+      const response = await axiosSecure.put(`/submitFeedback/${feedback.applicationId}?email=${user.email}`, {
         feedback: feedback.feedback,
         status: 'Processing',
       });
@@ -127,8 +129,8 @@ const AllApplications = () => {
       confirmButtonText: 'Yes, approve it!',
     }).then((result) => {
       if (result.isConfirmed) {
-        axios
-          .put(`${import.meta.env.VITE_URL}/approveApplication/${approveId}`, { status: 'Approved' })
+        axiosSecure
+          .put(`/approveApplication/${approveId}?email=${user.email}`, { status: 'Approved' })
           .then((response) => {
             Swal.fire({
               title: 'Approved!',

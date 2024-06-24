@@ -8,17 +8,20 @@ import formatDateToDdmmyyyy from "../../../Utility/formatDateToDdmmyyyy";
 import Swal from "sweetalert2";
 import ReviewModal from "../MyApplication/ReviewModal";
 import loading from "../../../assets/loading.json";
+import useAxiosSecure from "../../../Hooks/UseAxiosSecure";
+import Lottie from "lottie-react";
 
 const MyReviews = () => {
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedReview, setSelectedReview] = useState(null);
 
   const { data: reviews = [], isLoading, isError, error } = useQuery({
     queryFn: async () => {
-      const { data } = await axios(
-        `${import.meta.env.VITE_URL}/myReviews?email=${user.email}`
+      const { data } = await axiosSecure(
+        `/myReviews?email=${user.email}`
       );
       return data;
     },
@@ -37,7 +40,7 @@ const MyReviews = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`${import.meta.env.VITE_URL}/deleteReview/${reviewId}`);
+          await axiosSecure.delete(`/deleteReview/${reviewId}?email=${user.email}`);
           Swal.fire("Deleted!", "Your review has been deleted.", "success");
           queryClient.invalidateQueries("myReviews");
         } catch (error) {
@@ -60,7 +63,7 @@ const MyReviews = () => {
 
   const handleReviewSubmit = async (updatedReview) => {
     try {
-      await axios.put(`${import.meta.env.VITE_URL}/updateReview/${selectedReview._id}`, updatedReview);
+      await axiosSecure.put(`/updateReview/${selectedReview._id}?email=${user.email}`, updatedReview);
       Swal.fire("Success", "Review updated successfully", "success");
       queryClient.invalidateQueries("myReviews");
     } catch (error) {

@@ -7,15 +7,17 @@ import useAuth from '../../../Hooks/useAuth';
 import { useParams } from 'react-router-dom';
 import Lottie from 'lottie-react';
 import loading from "../../../assets/loading.json";
+import useAxiosSecure from '../../../Hooks/UseAxiosSecure';
 
 const EditApplicationForm = () => {
+  const axiosSecure = useAxiosSecure();
   const { handleSubmit, register, setValue, formState: { errors }, setError } = useForm();
   const { id } = useParams();
   const { user } = useAuth();
   const { data: applicationData = [], isLoading, isError, error } = useQuery({
     queryFn: async () => {
-      const { data } = await axios(
-        `${import.meta.env.VITE_URL}/editApplication?id=${id}`
+      const { data } = await axiosSecure(
+        `/editApplication?id=${id}&email=${user.email}`
       );
       return data;
     },
@@ -39,7 +41,7 @@ const EditApplicationForm = () => {
   const submitForm = async (formData) => {
     try {
       // Submit the form data
-     const res = await axios.put(`${import.meta.env.VITE_URL}/updateScholarApply/${applicationData._id}`, formData);
+     const res = await axiosSecure.put(`/updateScholarApply/${applicationData._id}?email=${user.email}`, formData);
       // Show success message
       if (res.data.application) {
         Swal.fire({

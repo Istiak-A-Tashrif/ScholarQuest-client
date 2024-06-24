@@ -3,9 +3,13 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import formatDateToYyyymmdd from '../../../Utility/formatDateToYyyymmdd';
+import useAxiosSecure from '../../../Hooks/UseAxiosSecure';
+import useAuth from '../../../Hooks/useAuth';
 
 const EditScholarship = () => {
   const { id } = useParams();
+  const {user} = useAuth();
+  const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
 
   const [scholarship, setScholarship] = useState({
@@ -52,7 +56,7 @@ const EditScholarship = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`${import.meta.env.VITE_URL}/updateScholarship/${id}`, scholarship);
+      const response = await axiosSecure.put(`/updateScholarship/${id}?email=${user.email}`, scholarship);
       Swal.fire({
         title: 'Updated!',
         text: 'Scholarship details have been updated.',

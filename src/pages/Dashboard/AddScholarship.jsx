@@ -3,12 +3,16 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import formatDateToYyyymmdd from '../../Utility/formatDateToYyyymmdd';
+import useAuth from '../../Hooks/useAuth';
+import useAxiosSecure from '../../Hooks/UseAxiosSecure';
 
 const imghosting = import.meta.env.VITE_IMG;
 const imgUpload = `https://api.imgbb.com/1/upload?key=${imghosting}`;
 
 const AddScholarship = () => {
   const navigate = useNavigate();
+  const {user} = useAuth();
+  const axiosSecure = useAxiosSecure();
 
   const initialScholarshipState = {
     universityName: '',
@@ -71,7 +75,7 @@ const AddScholarship = () => {
         universityImage: universityImageUrl,
       };
 
-      const response = await axios.post(`${import.meta.env.VITE_URL}/addScholarship`, newScholarship);
+      const response = await axiosSecure.post(`/addScholarship?email=${user.email}`, newScholarship);
       Swal.fire({
         title: 'Added!',
         text: 'New scholarship has been added.',

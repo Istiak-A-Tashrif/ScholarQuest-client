@@ -6,16 +6,18 @@ import { MdDelete } from 'react-icons/md';
 import Swal from 'sweetalert2';
 import Lottie from 'lottie-react';
 import loading from "../../../assets/loading.json";
+import useAxiosSecure from '../../../Hooks/UseAxiosSecure';
 
 const AllReviews = () => {
   const [userRole, setUserRole] = useState(null);
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
   const queryClient  = useQueryClient()
 
   useEffect(() => {
     const fetchUserRole = async () => {
       try {
-        const response = await axios.post(`${import.meta.env.VITE_URL}/checkUserRole`, { email: user?.email });
+        const response = await axiosSecure.post(`/checkUserRole?email=${user.email}`, { email: user?.email });
         setUserRole(response.data.role);
       } catch (error) {
         console.error("Error fetching user role:", error);
@@ -29,7 +31,7 @@ const AllReviews = () => {
 
   const { data, isLoading, isError, error } = useQuery({
     queryFn: async () => {
-      const { data } = await axios.get(`${import.meta.env.VITE_URL}/allReviews`);
+      const { data } = await axiosSecure.get(`/allReviews?email=${user.email}`);
       return data;
     },
     queryKey: ["allReviews"],
@@ -64,7 +66,7 @@ const AllReviews = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`${import.meta.env.VITE_URL}/deleteReview/${reviewId}`);
+          await axios.delete(`/deleteReview/${reviewId}?email=${user.email}`);
           Swal.fire("Deleted!", "Your review has been deleted.", "success");
           queryClient.invalidateQueries("myReviews");
         } catch (error) {

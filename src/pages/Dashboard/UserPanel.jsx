@@ -4,16 +4,18 @@ import axios from 'axios';
 import formatDateToDdmmyyyy from '../../Utility/formatDateToDdmmyyyy';
 import Swal from 'sweetalert2';
 import useAuth from '../../Hooks/useAuth';
+import useAxiosSecure from '../../Hooks/UseAxiosSecure';
 
 const UserPanel = () => {
 
   const [userRole, setUserRole] = useState(null);
 
   const {user} = useAuth();
+  const axiosSecure = useAxiosSecure();
   useEffect(() => {
     const fetchUserRole = async () => {
       try {
-        const response = await axios.post (`${import.meta.env.VITE_URL}/checkUserRole`, { email: user?.email});
+        const response = await axiosSecure.post (`/checkUserRole?email=${user.email}`, { email: user?.email});
         setUserRole(response.data.role);
       } catch (error) {
         console.error("Error fetching user role:", error);
@@ -29,7 +31,7 @@ const UserPanel = () => {
   const { data: users = [], isError, error } = useQuery({
     queryKey: ['users', selectedRole], // Include selectedRole in queryKey
     queryFn: async () => {
-      const { data } = await axios(`${import.meta.env.VITE_URL}/users?role=${selectedRole}`);
+      const { data } = await axiosSecure(`/users?role=${selectedRole}&email=${user.email}`);
       return data;
     },
   });
@@ -51,7 +53,7 @@ const UserPanel = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         // Send request to update user role
-        axios.put(`${import.meta.env.VITE_URL}/users/${userId}/role`, { role: newRole })
+        axiosSecure.put(`/users/${userId}/role?email=${user.email}`, { role: newRole })
           .then(response => {
             Swal.fire({
               title: 'Updated!',

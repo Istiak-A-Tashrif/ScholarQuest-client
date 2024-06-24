@@ -5,17 +5,19 @@ import useAuth from "../../Hooks/useAuth";
 import formatDateToDdmmyyyy from "../../Utility/formatDateToDdmmyyyy";
 import Lottie from "lottie-react";
 import loading from "../../assets/loading.json";
+import useAxiosSecure from "../../Hooks/UseAxiosSecure";
 
 const ScholarshipDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
 
   // Fetch scholarship details
   const { data: scholarshipData, isLoading: scholarshipLoading, isError: scholarshipError, error: scholarshipErrorObj } = useQuery({
     queryKey: ["details", id],
     queryFn: async () => {
-      const { data } = await axios(`${import.meta.env.VITE_URL}/details/${id}`);
+      const { data } = await axiosSecure(`/details/${id}?email=${user.email}`);
       return data;
     },
   });
@@ -23,7 +25,7 @@ const ScholarshipDetails = () => {
   // Fetch payment status
   const { data: checkPaymentData = [], isLoading: checkPaymentLoading, isError: checkPaymentError, error: chekPaymentError } = useQuery({
     queryFn: async () => {
-      const { data } = await axios(`${import.meta.env.VITE_URL}/checkPayment?email=${user.email}&id=${id}`);
+      const { data } = await axiosSecure(`${import.meta.env.VITE_URL}/checkPayment?email=${user.email}&id=${id}`);
       return data;
     },
     queryKey: ["checkPayment", id],
@@ -33,13 +35,31 @@ const ScholarshipDetails = () => {
   const { data: reviews = [], isLoading: reviewsLoading, isError, error } = useQuery({
     queryKey: ["reviews", id],
     queryFn: async () => {
-      const { data } = await axios(`${import.meta.env.VITE_URL}/reviews/${id}`);
+      const { data } = await axiosSecure(`/reviews/${id}?email=${user.email}`);
       return data;
     },
   });
 
-  if (scholarshipLoading || checkPaymentLoading || reviewsLoading) return <p>Loading...</p>;
-  if (error || scholarshipError || checkPaymentError) return <p>Error: {scholarshipError?.message || checkPaymentError?.message || reviewsError?.message}</p>;
+  if (scholarshipLoading || checkPaymentLoading || reviewsLoading) {
+    return (
+      <div className="flex items-center justify-center  min-h-[calc(100vh-300px)]">
+        <Lottie animationData={loading} loop={true} className="h-44"></Lottie>
+      </div>
+    );
+  }
+
+  if (scholarshipError || scholarshipErrorObj) {
+    console.error(scholarshipErrorObj);
+  }
+
+  if (checkPaymentError || chekPaymentError) {
+    console.error(chekPaymentError);
+  }
+
+  if (isError || error) {
+    console.error(error);
+  }
+
 
   // Destructure scholarship details object to access necessary fields
   const {
@@ -67,27 +87,7 @@ const ScholarshipDetails = () => {
       navigate('/payment', { state: { fee: applicationFees, universityName: universityName, scholarshipId: _id, scholarshipDetails: scholarshipData } });
     }
   };
-
-  if (scholarshipLoading || checkPaymentLoading || reviewsLoading) {
-    return (
-      <div className="flex items-center justify-center  min-h-[calc(100vh-300px)]">
-        <Lottie animationData={loading} loop={true} className="h-44"></Lottie>
-      </div>
-    );
-  }
-
-  if (scholarshipError || scholarshipErrorObj) {
-    console.error(scholarshipErrorObj);
-  }
-
-  if (checkPaymentError || chekPaymentError) {
-    console.error(chekPaymentError);
-  }
-
-  if (isError || error) {
-    console.error(error);
-  }
-
+ 
   return (
     <div className="hero min-h-screen bg-base-200">
       <div className="hero-content flex-col ">

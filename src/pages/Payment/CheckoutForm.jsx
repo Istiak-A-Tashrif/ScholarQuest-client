@@ -4,19 +4,21 @@ import { useEffect, useState } from "react";
 import useAuth from "../../Hooks/useAuth";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import useAxiosSecure from "../../Hooks/UseAxiosSecure";
 
 const CheckoutForm = ({ fee, universityName, scholarshipId, scholarshipDetails }) => {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [clientSecret, setClientSecret] = useState();
   const {user} = useAuth();
+  const axiosSecure = useAxiosSecure();
   const stripe = useStripe();
   const elements = useElements();
   const totalPrice = fee + scholarshipDetails.serviceCharge
 
   useEffect(() => {
     axios
-      .post("http://localhost:5000/create-payment-intent", { price: totalPrice })
+      .post(`${import.meta.env.VITE_URL}/create-payment-intent`, { price: totalPrice })
       .then((res) => {
         setClientSecret(res.data.clientSecret);
       });
@@ -78,7 +80,7 @@ const CheckoutForm = ({ fee, universityName, scholarshipId, scholarshipDetails }
           scholarshipId: scholarshipId,
         }
   
-        const res = await axios.post("http://localhost:5000/savePayment", payment)
+        const res = await axiosSecure.post(`/savePayment?email=${user.email}`, payment)
         console.log('payment saved', res);
         
         navigate('/apply', { state: { scholarshipDetails: scholarshipDetails } });

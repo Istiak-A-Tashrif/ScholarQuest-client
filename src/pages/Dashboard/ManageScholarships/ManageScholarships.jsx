@@ -7,9 +7,13 @@ import { MdCancel } from "react-icons/md";
 import Swal from 'sweetalert2';
 import Lottie from 'lottie-react';
 import loading from "../../../assets/loading.json";
+import useAuth from '../../../Hooks/useAuth';
+import useAxiosSecure from '../../../Hooks/UseAxiosSecure';
 
 const ManageScholarships = () => {
   const queryClient = useQueryClient();
+  const {user} = useAuth();
+  const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
  
 
@@ -37,7 +41,7 @@ const ManageScholarships = () => {
       confirmButtonText: "Yes, delete it!"
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`${import.meta.env.VITE_URL}/deleteScholarship/${deleteId}`)
+        axios.delete(`${import.meta.env.VITE_URL}/deleteScholarship/${deleteId}?email=${user.email}`)
           .then(response => {
             Swal.fire({
               title: "Deleted!",

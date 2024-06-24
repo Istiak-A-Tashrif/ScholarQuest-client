@@ -5,6 +5,7 @@ import useAuth from '../../Hooks/useAuth';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import useAxiosSecure from '../../Hooks/UseAxiosSecure';
 
 const imghosting = import.meta.env.VITE_IMG;
 const imgUpload = `https://api.imgbb.com/1/upload?key=${imghosting}`;
@@ -15,6 +16,7 @@ const ScholarshipApplicationForm = () => {
   const { scholarshipDetails } = state;
 
   const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
   const { handleSubmit, register, formState: { errors }, setError } = useForm();
 
   const queryClient = useQueryClient();
@@ -23,7 +25,7 @@ const ScholarshipApplicationForm = () => {
   // Check if the user has already applied
   const { data: alreadyApplied } = useQuery({
     queryFn: async () => {
-      const { data } = await axios.get(`${import.meta.env.VITE_URL}/checkApply`, {
+      const { data } = await axiosSecure.get(`/checkApply`, {
         params: { email: user.email, scholarshipId: scholarshipDetails?._id }
       });
       return data;
@@ -53,7 +55,7 @@ const ScholarshipApplicationForm = () => {
         };
 
         // Submit the form data
-        await axios.post(`${import.meta.env.VITE_URL}/scholarApply`, finalFormData);
+        await axiosSecure.post(`/scholarApply?email=${user.email}`, finalFormData);
 
         Swal.fire({
           title: "Success",
