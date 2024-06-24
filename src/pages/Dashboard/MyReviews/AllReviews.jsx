@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import useAuth from '../../../Hooks/useAuth';
 import axios from 'axios';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { MdCancel } from 'react-icons/md';
+import { MdDelete } from 'react-icons/md';
 import Swal from 'sweetalert2';
 
 const AllReviews = () => {
@@ -86,7 +86,7 @@ const AllReviews = () => {
         <tbody>
           {data.map((review, index) => (
             <tr key={index}>
-                <td><button className='hover:scale-[2]' onClick={() => handleDelete(review._id)}><MdCancel></MdCancel></button></td>
+                <td><button className='hover:scale-[2]' onClick={() => handleDelete(review._id)}><MdDelete className='text-lg'></MdDelete></button></td>
               <td>
                 <div className="flex items-center gap-3">
                   <div className="avatar">

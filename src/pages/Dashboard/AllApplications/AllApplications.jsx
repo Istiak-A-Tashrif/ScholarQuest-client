@@ -90,7 +90,7 @@ const AllApplications = () => {
             feedback: feedback.feedback,
             status: 'Processing',
           });
-z          
+       
       Swal.fire({
         title: 'Thank You',
         text: 'Your feedback has been submitted',

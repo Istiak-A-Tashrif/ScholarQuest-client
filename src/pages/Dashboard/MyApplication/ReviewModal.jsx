@@ -24,9 +24,9 @@ const ReviewModal = ({ isOpen, onRequestClose, scholarship, onSubmit, isEditing 
       ratingPoint,
       comments,
       reviewDate: new Date().toISOString(), // Automatically set to current date and time
-      scholarshipName: scholarship.scholarshipName || scholarship.scholarshipDetails.scholarshipCategory,
-      universityName: scholarship.universityName || scholarship.scholarshipDetails.universityName,
-      universityId: scholarship.universityId || scholarship.scholarshipDetails._id,
+      scholarshipName: scholarship.scholarshipDetails.scholarshipCategory,
+      universityName: scholarship.scholarshipDetails.universityName,
+      universityId: scholarship.scholarshipDetails._id,
       reviewerName: user.displayName,
       reviewerImage: user.photoURL || 'https://static.vecteezy.com/system/resources/thumbnails/005/129/844/sm…',
       reviewerEmail: user.email,

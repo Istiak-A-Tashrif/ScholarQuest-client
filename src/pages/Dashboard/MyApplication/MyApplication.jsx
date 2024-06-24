@@ -31,6 +31,16 @@ const MyApplication = () => {
     queryKey: ["applications"],
   });
 
+  const { data: reviews = [], isLoading: reviewLoading, isError: isReviewError, error: err } = useQuery({
+    queryFn: async () => {
+      const { data } = await axios(
+        `${import.meta.env.VITE_URL}/myReviews?email=${user.email}`
+      );
+      return data;
+    },
+    queryKey: ["myReviews"],
+  });
+
   const handleAddReviewClick = (scholarship) => {
     setSelectedScholarship(scholarship);
     setIsModalOpen(true);
@@ -77,16 +87,16 @@ const MyApplication = () => {
       }
     });
   };
-  
 
   const handleReviewSubmit = async (review) => {
     try {
       const response = await axios.post(`${import.meta.env.VITE_URL}/saveReview`, review);
       Swal.fire({
         title: "Thank You",
-        text: "Your reviw has been saved",
+        text: "Your review has been saved",
         icon: "success"
       });
+      queryClient.invalidateQueries({ queryKey: ["myReviews"] });
     } catch (error) {
       console.error('Error submitting review:', error);
       // Handle error state or display error message to user
@@ -108,6 +118,7 @@ const MyApplication = () => {
               <th>Applied Degree</th>
               <th>Total Fees</th>
               <th>Status</th>
+              <th>Feedback</th>
               <th></th>
               <th></th>
               <th></th>
@@ -115,42 +126,52 @@ const MyApplication = () => {
             </tr>
           </thead>
           <tbody>
-            {applications.map((application, idx) => (
-              <tr key={idx} className="hover">
-                <th>{idx + 1}</th>
-                <td>{application.scholarshipDetails.universityName}</td>
-                <td>
-                  {application.scholarshipDetails.universityCity},{" "}
-                  {application.scholarshipDetails.universityCountry}
-                </td>
-                <td>{application.scholarshipDetails.subjectCategory}</td>
-                <td>{application.degree}</td>
-                <td>
-                  {application.scholarshipDetails.applicationFees +
-                    application.scholarshipDetails.serviceCharge}
-                </td>
-                <td>{application?.status || "pending"}</td>
-                <td>
-                  <Link to={`/details/${application.scholarshipDetails._id}`} className="btn btn-link"> Details</Link>
-                </td>
-                <td>
-                  <button onClick={()=>navigate(`/dashboard/editApplication/${application._id}`)}><FaEdit className="hover:scale-[2]"></FaEdit></button>
-                </td>
-                <td>
-                <button onClick={() => handleDelete(application._id)}>
-                    <MdCancel className="hover:scale-[2]" />
-                  </button>
-                </td>
-                <td>
-                  <button
-                    className="btn btn-info"
-                    onClick={() => handleAddReviewClick(application)}
-                  >
-                    Add Review
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {applications.map((application, idx) => {
+              const reviewExist = reviews.some(
+                (review) => review.universityId === application.scholarshipDetails._id && review.reviewerEmail === user.email
+              );
+
+              return (
+                <tr key={idx} className="hover">
+                  <th>{idx + 1}</th>
+                  <td>{application.scholarshipDetails.universityName}</td>
+                  <td>
+                    {application.scholarshipDetails.universityCity},{" "}
+                    {application.scholarshipDetails.universityCountry}
+                  </td>
+                  <td>{application.scholarshipDetails.subjectCategory}</td>
+                  <td>{application.degree}</td>
+                  <td>
+                    {application.scholarshipDetails.applicationFees +
+                      application.scholarshipDetails.serviceCharge}
+                  </td>
+                  <td>{application?.status || "pending"}</td>
+                  <td>{application?.feedback}</td>
+                  <td>
+                    <Link to={`/details/${application.scholarshipDetails._id}`} className="btn btn-link"> Details</Link>
+                  </td>
+                  <td>
+                    <button onClick={() => navigate(`/dashboard/editApplication/${application._id}`)}>
+                      <FaEdit className="hover:scale-[2]" />
+                    </button>
+                  </td>
+                  <td>
+                    <button onClick={() => handleDelete(application._id)}>
+                      <MdCancel className="hover:scale-[2]" />
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      className="btn btn-info"
+                      onClick={() => handleAddReviewClick(application)}
+                      disabled={reviewExist}
+                    >
+                      {reviewExist ? 'Reviewed' : 'Add Review'}
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
