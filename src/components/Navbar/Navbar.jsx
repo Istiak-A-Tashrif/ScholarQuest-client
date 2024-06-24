@@ -9,13 +9,13 @@ const Navbar = () => {
   const navLink = (
     <>
       <li>
-        <Link>Home</Link>
+        <Link to={'/'}>Home</Link>
       </li>
       <li>
-        <Link>All Scholarship</Link>
+        <Link to={'/allScholarship'}>All Scholarship</Link>
       </li>
       <li>
-        <Link to={"/dashboard"}>Dashboard</Link>
+        <Link to={"/dashboard/myProfile"}>Dashboard</Link>
       </li>
         {user ? (
           <li onClick={userSignOut}><Link>Log out</Link></li>
@@ -28,7 +28,7 @@ const Navbar = () => {
   return (
     <>
       <div className="navbar bg-base-100 mb-4">
-        <div className="navbar-start">
+        <div className="navbar-start z-20">
           <div className="dropdown">
             <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
               <svg

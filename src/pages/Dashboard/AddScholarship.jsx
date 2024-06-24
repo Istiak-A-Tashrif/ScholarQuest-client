@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import formatDateToYyyymmdd from '../../Utility/formatDateToYyyymmdd';
 
+const imghosting = import.meta.env.VITE_IMG;
+const imgUpload = `https://api.imgbb.com/1/upload?key=${imghosting}`;
+
 const AddScholarship = () => {
   const navigate = useNavigate();
 
-  // Initial state for scholarship form fields
   const initialScholarshipState = {
     universityName: '',
     universityImage: '',
@@ -24,11 +26,10 @@ const AddScholarship = () => {
   };
 
   const [scholarship, setScholarship] = useState(initialScholarshipState);
+  const [universityImageFile, setUniversityImageFile] = useState(null);
 
-  // Handle input change for form fields
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    // Convert applicationDeadline and postDate to ISO format if they are date fields
     const updatedValue = (name === 'applicationDeadline' || name === 'postDate') ? new Date(value).toISOString() : value;
 
     setScholarship((prevScholarship) => ({
@@ -37,12 +38,40 @@ const AddScholarship = () => {
     }));
   };
 
-  // Handle form submission
+  const handleImageChange = (e) => {
+    setUniversityImageFile(e.target.files[0]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Send POST request to add new scholarship
-      const response = await axios.post(`${import.meta.env.VITE_URL}/addScholarship`, scholarship);
+      let universityImageUrl = '';
+
+      if (universityImageFile) {
+        const imgFile = new FormData();
+        imgFile.append('image', universityImageFile);
+
+        const res = await axios.post(imgUpload, imgFile);
+        if (res.data.success) {
+          universityImageUrl = res.data.data.display_url;
+        } else {
+          Swal.fire({
+            title: 'Error',
+            text: 'Failed to upload university image. Please try again later.',
+            icon: 'error',
+            timer: 1500,
+            showConfirmButton: false,
+          });
+          return;
+        }
+      }
+
+      const newScholarship = {
+        ...scholarship,
+        universityImage: universityImageUrl,
+      };
+
+      const response = await axios.post(`${import.meta.env.VITE_URL}/addScholarship`, newScholarship);
       Swal.fire({
         title: 'Added!',
         text: 'New scholarship has been added.',
@@ -50,7 +79,6 @@ const AddScholarship = () => {
         timer: 1500,
         showConfirmButton: false,
       });
-      // Navigate to manage scholarships page after successful addition
       navigate('/dashboard/manageScholarships');
     } catch (error) {
       console.error('Error adding scholarship:', error);
@@ -61,7 +89,6 @@ const AddScholarship = () => {
         timer: 1500,
         showConfirmButton: false,
       });
-      // Handle error (e.g., show error message)
     }
   };
 
@@ -69,7 +96,6 @@ const AddScholarship = () => {
     <div className="flex justify-center items-center overflow-auto">
       <div className="w-full max-w-lg">
         <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-          {/* Input fields */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="universityName">
               University Name
@@ -85,24 +111,19 @@ const AddScholarship = () => {
               required
             />
           </div>
-          {/* Repeat similar input fields for other scholarship details */}
-          {/* University Image URL */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="universityImage">
-              University Image URL
+              University Image
             </label>
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               id="universityImage"
               name="universityImage"
-              type="text"
-              placeholder="University Image URL"
-              value={scholarship.universityImage}
-              onChange={handleInputChange}
+              type="file"
+              onChange={handleImageChange}
               required
             />
           </div>
-          {/* Scholarship Category */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="scholarshipCategory">
               Scholarship Category
@@ -118,7 +139,6 @@ const AddScholarship = () => {
               required
             />
           </div>
-          {/* University Country */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="universityCountry">
               University Country
@@ -134,7 +154,6 @@ const AddScholarship = () => {
               required
             />
           </div>
-          {/* University City */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="universityCity">
               University City
@@ -150,7 +169,6 @@ const AddScholarship = () => {
               required
             />
           </div>
-          {/* Application Deadline */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="applicationDeadline">
               Application Deadline
@@ -165,7 +183,6 @@ const AddScholarship = () => {
               required
             />
           </div>
-          {/* Subject Category */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="subjectCategory">
               Subject Category
@@ -181,7 +198,6 @@ const AddScholarship = () => {
               required
             />
           </div>
-          {/* Application Fees */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="applicationFees">
               Application Fees
@@ -197,7 +213,6 @@ const AddScholarship = () => {
               required
             />
           </div>
-          {/* Details */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="details">
               Details
@@ -212,7 +227,6 @@ const AddScholarship = () => {
               required
             />
           </div>
-          {/* Stipend */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="stipend">
               Stipend
@@ -228,7 +242,6 @@ const AddScholarship = () => {
               required
             />
           </div>
-          {/* Post Date */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="postDate">
               Post Date
@@ -243,7 +256,6 @@ const AddScholarship = () => {
               required
             />
           </div>
-          {/* Service Charge */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="serviceCharge">
               Service Charge
@@ -259,8 +271,6 @@ const AddScholarship = () => {
               required
             />
           </div>
-
-          {/* Action buttons */}
           <div className="flex items-center justify-between">
             <button
               className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"

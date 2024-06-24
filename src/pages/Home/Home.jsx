@@ -37,7 +37,7 @@ const Home = () => {
                 scholarships.map((scholarship, idx) => <ScholarshipCard scholarship={scholarship} key={idx}></ScholarshipCard>)
             }
 
-            <div className="flex justify-center items-center mt-4 mb-6 w-screen "><Link to={'/allScholarship'} className='btn btn-primary'>All Scholarship</Link></div>
+            <div className="flex justify-center container items-center mt-4 mb-6 w-screen "><Link to={'/allScholarship'} className='btn btn-primary'>All Scholarship</Link></div>
            </div>
             <div className="divider divider-primary w-1/2 mx-auto my-10 text-2xl font-merriweather">Student Reviews</div>
             <div className="grid grid-cols-2 gap-5">
