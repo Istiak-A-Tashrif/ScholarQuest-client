@@ -43,10 +43,9 @@ const CheckoutForm = ({ fee, universityName, scholarshipId, scholarshipDetails }
     });
 
     if (error) {
-      console.log("payment error", error);
+      console.error("payment error", error);
       setError(error.message)
     } else {
-      console.log("paymentMethod", paymentMethod);
       setError('')
     }
     const {paymentIntent, error: confirmError} = await stripe.confirmCardPayment(clientSecret, {
@@ -59,11 +58,10 @@ const CheckoutForm = ({ fee, universityName, scholarshipId, scholarshipDetails }
       }
     })
     if (confirmError) {
-      console.log(confirmError);
+      console.error(confirmError);
       setError(confirmError.message)
     }
     else{
-      console.log(paymentIntent);
       setError('')
       if (paymentIntent.status === 'succeeded') {
         Swal.fire({
@@ -81,7 +79,6 @@ const CheckoutForm = ({ fee, universityName, scholarshipId, scholarshipDetails }
         }
   
         const res = await axiosSecure.post(`/savePayment?email=${user.email}`, payment)
-        console.log('payment saved', res);
         
         navigate('/apply', { state: { scholarshipDetails: scholarshipDetails } });
       }

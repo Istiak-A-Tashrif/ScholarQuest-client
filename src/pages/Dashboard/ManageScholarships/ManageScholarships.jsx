@@ -24,12 +24,12 @@ const ManageScholarships = () => {
     error,
   } = useQuery({
     queryFn: async () => {
-      const { data } = await axios.get(`${import.meta.env.VITE_URL}/allScholarship`);
+      const { data } = await axiosSecure.get(`/manageScholarships?email=${user.email}`);
       return data;
     },
     queryKey: ["scholarships"],
   });
-
+  
   const handleDelete = (deleteId) => {
     Swal.fire({
       title: "Are you sure?",
@@ -41,7 +41,7 @@ const ManageScholarships = () => {
       confirmButtonText: "Yes, delete it!"
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.delete(`${import.meta.env.VITE_URL}/deleteScholarship/${deleteId}?email=${user.email}`)
+        axiosSecure.delete(`/deleteScholarship/${deleteId}?email=${user.email}`)
           .then(response => {
             Swal.fire({
               title: "Deleted!",

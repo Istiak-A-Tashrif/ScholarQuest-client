@@ -76,6 +76,7 @@ const MyApplication = () => {
               showConfirmButton: false
             });
             queryClient.invalidateQueries({ queryKey: ["applications"] });
+            queryClient.invalidateQueries({ queryKey: ["checkApply"] });
           })
           .catch(error => {
             console.error('Error deleting application:', error);

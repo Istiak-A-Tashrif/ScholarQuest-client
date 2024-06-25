@@ -72,7 +72,7 @@ const AllApplications = () => {
           .put(`/cancelApplication/${cancelId}?email=${user.email}`, { status: 'Rejected' })
           .then((response) => {
             Swal.fire({
-              title: 'Canceled!',
+              title: 'Rejected!',
               text: 'Application has been canceled.',
               icon: 'success',
               timer: 1500,

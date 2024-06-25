@@ -32,7 +32,7 @@ const ScholarshipDetails = () => {
   });
 
   // Fetch reviews for the scholarship
-  const { data: reviews = [], isLoading: reviewsLoading, isError, error } = useQuery({
+  const { data: reviews = [], isLoading: reviewsLoading, isError: reviewsError, error: reviewsErrorObj } = useQuery({
     queryKey: ["reviews", id],
     queryFn: async () => {
       const { data } = await axiosSecure(`/reviews/${id}?email=${user.email}`);
@@ -40,9 +40,18 @@ const ScholarshipDetails = () => {
     },
   });
 
-  if (scholarshipLoading || checkPaymentLoading || reviewsLoading) {
+  // Fetch average rating for the scholarship
+  const { data: averageRatingData, isLoading: averageRatingLoading, isError: averageRatingError, error: averageRatingErrorObj } = useQuery({
+    queryKey: ["averageRating", id],
+    queryFn: async () => {
+      const { data } = await axios(`${import.meta.env.VITE_URL}/reviews/${id}/average-rating?email=${user.email}`);
+      return data;
+    },
+  });
+
+  if (scholarshipLoading || checkPaymentLoading || reviewsLoading || averageRatingLoading) {
     return (
-      <div className="flex items-center justify-center  min-h-[calc(100vh-300px)]">
+      <div className="flex items-center justify-center min-h-[calc(100vh-300px)]">
         <Lottie animationData={loading} loop={true} className="h-44"></Lottie>
       </div>
     );
@@ -56,14 +65,16 @@ const ScholarshipDetails = () => {
     console.error(chekPaymentError);
   }
 
-  if (isError || error) {
-    console.error(error);
+  if (reviewsError || reviewsErrorObj) {
+    console.error(reviewsErrorObj);
   }
 
+  if (averageRatingError || averageRatingErrorObj) {
+    console.error(averageRatingErrorObj);
+  }
 
   // Destructure scholarship details object to access necessary fields
   const {
-    _id,
     universityName,
     universityImage,
     scholarshipCategory,
@@ -72,25 +83,25 @@ const ScholarshipDetails = () => {
     applicationDeadline,
     subjectCategory,
     applicationFees,
-    rating,
     details,
     stipend,
     postDate,
     serviceCharge,
   } = scholarshipData;
 
+  const averageRating = averageRatingData?.averageRating;
+
   const handleApplyNow = () => {
     if (checkPaymentData) {
       navigate('/apply', { state: { scholarshipDetails: scholarshipData } });
-    }
-    else {
-      navigate('/payment', { state: { fee: applicationFees, universityName: universityName, scholarshipId: _id, scholarshipDetails: scholarshipData } });
+    } else {
+      navigate('/payment', { state: { fee: applicationFees, universityName, scholarshipId: id, scholarshipDetails: scholarshipData } });
     }
   };
- 
+
   return (
     <div className="hero min-h-screen bg-base-200">
-      <div className="hero-content flex-col ">
+      <div className="hero-content flex-col">
         <img
           src={universityImage}
           className="max-w-sm rounded-lg shadow-2xl"
@@ -102,38 +113,16 @@ const ScholarshipDetails = () => {
 
           {/* Scholarship details */}
           <div className="my-4">
-            <p>
-              <strong>Scholarship Category:</strong> {scholarshipCategory}
-            </p>
-            <p>
-              <strong>Country:</strong> {universityCountry}
-            </p>
-            <p>
-              <strong>City:</strong> {universityCity}
-            </p>
-            <p>
-              <strong>Subject Category:</strong> {subjectCategory}
-            </p>
-            <p>
-              <strong>Application Deadline:</strong>{" "}
-              {formatDateToDdmmyyyy(applicationDeadline)}
-            </p>
-            <p>
-              <strong>Application Fees:</strong> {applicationFees} USD
-            </p>
-            <p>
-              <strong>Rating:</strong> {rating}
-            </p>
-            <p>
-              <strong>Stipend:</strong> {stipend} USD
-            </p>
-            <p>
-              <strong>Post Date:</strong>{" "}
-              {formatDateToDdmmyyyy(postDate)}
-            </p>
-            <p>
-              <strong>Service Charge:</strong> {serviceCharge} USD
-            </p>
+            <p><strong>Scholarship Category:</strong> {scholarshipCategory}</p>
+            <p><strong>Country:</strong> {universityCountry}</p>
+            <p><strong>City:</strong> {universityCity}</p>
+            <p><strong>Subject Category:</strong> {subjectCategory}</p>
+            <p><strong>Application Deadline:</strong> {formatDateToDdmmyyyy(applicationDeadline)}</p>
+            <p><strong>Application Fees:</strong> {applicationFees} USD</p>
+            <p><strong>Average Rating:</strong> {averageRating}</p>
+            <p><strong>Stipend:</strong> {stipend} USD</p>
+            <p><strong>Post Date:</strong> {formatDateToDdmmyyyy(postDate)}</p>
+            <p><strong>Service Charge:</strong> {serviceCharge} USD</p>
           </div>
 
           {/* Reviews section */}
@@ -158,9 +147,7 @@ const ScholarshipDetails = () => {
                   </div>
                 </div>
                 <p className="text-gray-800">{review.comments}</p>
-                <p className="text-sm text-gray-600 mt-2">
-                  Rating: {review.ratingPoint}
-                </p>
+                <p className="text-sm text-gray-600 mt-2">Rating: {averageRating}</p>
               </div>
             ))}
           </div>

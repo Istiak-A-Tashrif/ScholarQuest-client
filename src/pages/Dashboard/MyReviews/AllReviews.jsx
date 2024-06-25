@@ -66,7 +66,7 @@ const AllReviews = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`/deleteReview/${reviewId}?email=${user.email}`);
+          await axiosSecure.delete(`/deleteReview/${reviewId}?email=${user.email}`);
           Swal.fire("Deleted!", "Your review has been deleted.", "success");
           queryClient.invalidateQueries("myReviews");
         } catch (error) {

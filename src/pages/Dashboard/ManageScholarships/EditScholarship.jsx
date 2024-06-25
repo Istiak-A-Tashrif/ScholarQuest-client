@@ -33,7 +33,7 @@ const EditScholarship = () => {
 
   const fetchScholarshipDetails = async () => {
     try {
-      const { data } = await axios.get(`${import.meta.env.VITE_URL}/details/${id}`);
+      const { data } = await axiosSecure.get(`/details/${id}?email=${user.email}`);
       // Assuming the fetched data has properties matching the scholarship state
       setScholarship(data);
     } catch (error) {

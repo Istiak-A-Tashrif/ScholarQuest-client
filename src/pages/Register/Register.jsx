@@ -111,7 +111,6 @@ const Register = () => {
       notify(); // Notify user about successful registration
     } catch (error) {
       if (error.response && error.response.status === 400) {
-        console.log("User with this email already exists.");
         notify();
       } else {
         console.error('Error:', error.message);

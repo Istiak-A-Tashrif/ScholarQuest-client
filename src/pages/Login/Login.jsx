@@ -120,9 +120,7 @@ const Login = () => {
         name,
         photo,
       });
-
-      console.log('User data sent to server:', response.data);
-      // Optionally handle success or perform additional actions
+     
     } catch (error) {
       console.error('Failed to send user data to server:', error);
       // Optionally handle error or display an error message to the user
