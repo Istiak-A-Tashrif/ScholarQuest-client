@@ -63,8 +63,7 @@ const Register = () => {
       const { data } = await axiosSecure.post("/jwt", {
         email: email,
       });
-
-      localStorage.setItem('token', data.token);
+      
       await update(name, photoURL);
       
       const newUser = {
@@ -98,8 +97,7 @@ const Register = () => {
       const { data } = await axiosSecure.post("/jwt", {
         email: res.user.email,
       });
-
-      localStorage.setItem('token', data.token)
+      
   
       // Register user if not already registered
       await axios.post(`${import.meta.env.VITE_URL}/registerUser`, {

@@ -71,7 +71,6 @@ const AuthProvider = ({ children }) => {
       const { data } = await axios(`${import.meta.env.VITE_URL}/logout`, {
         withCredentials: true,
       });
-      localStorage.removeItem('token');
       
     } catch (error) {
       // Handle error

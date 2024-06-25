@@ -35,8 +35,7 @@ const Login = () => {
           const { data } = await axiosSecure.post("/jwt", {
             email: res.user.email,
           });
-
-          localStorage.setItem('token', data.token);
+          
           // Send user data to backend (assuming sendUserData is defined)
           await sendUserData(res.user.email, res.user.displayName, res.user.photoURL);
 
@@ -89,8 +88,7 @@ const Login = () => {
         const { data } = await axiosSecure.post("/jwt", {
           email: res.user.email,
         });
-
-        localStorage.setItem('token', data.token)
+        
         // Send user data to backend
         sendUserData(res.user.email, res.user.displayName, res.user.photoURL);
         
