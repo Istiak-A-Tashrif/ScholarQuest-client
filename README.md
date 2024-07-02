@@ -74,7 +74,7 @@
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/programming-hero-web-course1/b9a12-client-side-Istiak-A-Tashrif.git
+git clone https://github.com/Istiak-A-Tashrif/ScholarQuest-client.git
 cd scholarquest
 ```
 
