@@ -73,25 +73,27 @@
 ### Installation
 
 1. Clone the repository:
+```bash
 git clone https://github.com/programming-hero-web-course1/b9a12-client-side-Istiak-A-Tashrif.git
 cd scholarquest
-
+```
 
 2. Install the dependencies:
-
+```bash
 npm install
+```
 
 3. Set up environment variables:
 - Create a `.env` file in the root directory
 - Add your Firebase config keys and MongoDB credentials
 
 4. Run the application:
-
+```bash
 npm start
+```
 
 ## Repository Links
 
-- [Client Side GitHub Repository](https://github.com/programming-hero-web-course1/b9a12-client-side-Istiak-A-Tashrif)
 - [Server Side GitHub Repository](https://github.com/programming-hero-web-course1/b9a12-server-side-Istiak-A-Tashrif)
 
 ## Contributions
